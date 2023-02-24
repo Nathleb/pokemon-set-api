@@ -1,10 +1,22 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { TemplateSet } from './pokemon/entities/templateSet.entity';
+import { PokemonModule } from './pokemon/pokemon.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'mongodb',
+      url: 'mongodb+srv://@cluster0.ugzwt.mongodb.net/PokemonSetsTemplates',
+      useNewUrlParser: true,
+      logging: true,
+      entities: [TemplateSet],
+      synchronize: true,
+      useUnifiedTopology: true
+    }),
+    PokemonModule,
+  ]
 })
-export class AppModule {}
+export class AppModule { }
