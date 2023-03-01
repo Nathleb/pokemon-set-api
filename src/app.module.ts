@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { TemplateSet } from './pokemon/entities/templateSet.entity';
+import { PokemonTemplateSet } from './pokemon/entities/pokemonTemplateSet.entity';
 import { PokemonModule } from './pokemon/pokemon.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { KeyWord } from './pokemon/entities/keyWord.entity';
 
 
 
@@ -9,12 +10,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mongodb',
-      url: 'mongodb+srv://@cluster0.ugzwt.mongodb.net/PokemonSetsTemplates',
+      url: 'mongodb+srv://@cluster0.ugzwt.mongodb.net/PokemonRand9',
       useNewUrlParser: true,
       logging: true,
-      entities: [TemplateSet],
+      entities: [PokemonTemplateSet, KeyWord],
       synchronize: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      ssl: true,
     }),
     PokemonModule,
   ]

@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
-export class TemplateSet {
+export class KeyWord {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -10,14 +10,8 @@ export class TemplateSet {
     name: string;
 
     @Column()
-    level: number;
+    description: string;
 
     @Column()
-    items: any;
-
-    @Column()
-    abilities: any;
-
-    @Column()
-    roles: any;
+    type: "ability" | "move" | "item";
 }

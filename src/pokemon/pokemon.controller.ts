@@ -5,23 +5,20 @@ import { PokemonService } from './pokemon.service';
 @Controller('pokemons')
 export class PokemonController {
 
-    constructor(public pokemonService: PokemonService) { };
+    constructor(private readonly pokemonService: PokemonService) { };
 
 
-    @Get()
-    getAllPokemon() {
-        return this.pokemonService.findAll();
-    }
 
     @Get('/randomSample')
-    async getRandomPokemons(@Body() body: GetRandomPokemonsParameterDto) {
-        return this.pokemonService.findManyAtRandom(body.size);
+    async getRandomPokemons(@Body() parameters: GetRandomPokemonsParameterDto) {
+        return this.pokemonService.findManyAtRandom(parameters);
     }
 
-    @Get('/:id')
-    getPokemon(@Param('id') id: string) {
-        return this.pokemonService.findOne(id);
-    }
+    // @Get('/format')
+    // async format() {
+    //     return this.pokemonService.format();
+    // }
+
 
 
 }
