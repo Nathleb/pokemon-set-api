@@ -7,3 +7,34 @@ The API is callable via <http://localhost:3000//pokemons/randomSample> and can b
 ``{
   "size": 6
 }``
+
+the response is formatted as follow:
+
+``
+{
+        "name": "Gardevoir",
+        "level": 84,
+        "role": "Fast Attacker",
+        "item": {
+            "name": "Choice Scarf"
+        },
+        "teraType": "Fighting",
+        "moves": [
+            {
+                "name": "Moonblast"
+            },
+            {
+                "name": "Focus Blast"
+            },
+            {
+                "name": "Psychic"
+            },
+            {
+                "name": "Psyshock"
+            }
+        ],
+        "ability": {
+            "name": "Trace"
+        }
+    }
+``
