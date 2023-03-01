@@ -14,32 +14,32 @@ the response is formatted as follow:
 
 ```yaml
 [
-{
-  "name": "Gardevoir",
-  "level": 84,
-  "role": "Fast Attacker",
-  "item": {
-      "name": "Choice Scarf"
-  },
-  "teraType": "Fighting",
-  "moves": [
-      {
-          "name": "Moonblast"
-      },
-      {
-          "name": "Focus Blast"
-      },
-      {
-          "name": "Psychic"
-      },
-      {
-          "name": "Psyshock"
-      }
-  ],
-  "ability": {
-      "name": "Trace"
-  }
-},
+    {
+        "name": "Gardevoir",
+        "level": 84,
+        "role": "Fast Attacker",
+        "item": {
+            "name": "Choice Scarf"
+        },
+        "teraType": "Fighting",
+        "moves": [
+            {
+                "name": "Moonblast"
+            },
+            {
+                "name": "Focus Blast"
+            },
+            {
+                "name": "Psychic"
+            },
+            {
+                "name": "Psyshock"
+            }
+        ],
+        "ability": {
+            "name": "Trace"
+        }
+    },
     {
         "name": "Tyranitar",
         "level": 81,
