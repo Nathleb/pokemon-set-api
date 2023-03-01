@@ -4,37 +4,39 @@ Simple Api to fetch pokemon sets from the current **[pokemonShowdown](https://pl
 
 The API is callable via <http://localhost:3000//pokemons/randomSample> and can be given parameters through the request body :
 
-``{
+```yaml
+{
   "size": 6
-}``
+}
+```
 
 the response is formatted as follow:
 
-``
+```yaml
 {
-        "name": "Gardevoir",
-        "level": 84,
-        "role": "Fast Attacker",
-        "item": {
-            "name": "Choice Scarf"
-        },
-        "teraType": "Fighting",
-        "moves": [
-            {
-                "name": "Moonblast"
-            },
-            {
-                "name": "Focus Blast"
-            },
-            {
-                "name": "Psychic"
-            },
-            {
-                "name": "Psyshock"
-            }
-        ],
-        "ability": {
-            "name": "Trace"
-        }
-    }
-``
+  "name": "Gardevoir",
+  "level": 84,
+  "role": "Fast Attacker",
+  "item": {
+      "name": "Choice Scarf"
+  },
+  "teraType": "Fighting",
+  "moves": [
+      {
+          "name": "Moonblast"
+      },
+      {
+          "name": "Focus Blast"
+      },
+      {
+          "name": "Psychic"
+      },
+      {
+          "name": "Psyshock"
+      }
+  ],
+  "ability": {
+      "name": "Trace"
+  }
+}
+```
