@@ -46,39 +46,35 @@ export class PokemonService {
         pokemonSet.moves = this.pickAtRandomFromWeightedMap(moves);
         pokemonSet.ability = this.pickAtRandomFromWeightedMap(abilities)[0];
 
-        // console.log(pokemonSet);
         return pokemonSet;
     }
 
     pickAtRandomFromWeightedMap(weightedMap: Map<string, number>): Array<KeyWord> {
         let pickedValues: Array<KeyWord> = new Array<KeyWord>();
-        let totalWeight = 0;
+        let remainingPicks = 0;
         for (let [key, weight] of weightedMap) {
-
             if (weight == 1) {
                 let keyword = new KeyWord();
                 keyword.name = key;
                 pickedValues.push(keyword);
                 weightedMap.delete(key);
             }
-            else totalWeight += weight;
+            else remainingPicks += weight;
         };
-        totalWeight = Math.round(totalWeight);
 
-        let remainingWeight = Math.random() * totalWeight;
+        remainingPicks = Math.round(remainingPicks);
+        let remainingWeight = Math.random() * remainingPicks;
 
-        while (totalWeight > 0) {
+        while (remainingPicks > 0) {
             for (let [key, weight] of weightedMap) {
-                if (totalWeight > 0) {
-                    if (remainingWeight < weight) {
-                        let keyword = new KeyWord();
-                        keyword.name = key;
-                        pickedValues.push(keyword);
-                        weightedMap.delete(key);
-                        totalWeight--;
-                    }
-                    remainingWeight -= weight;
+                if (remainingPicks > 0 && remainingWeight < weight) {
+                    let keyword = new KeyWord();
+                    keyword.name = key;
+                    pickedValues.push(keyword);
+                    weightedMap.delete(key);
+                    remainingPicks--;
                 }
+                remainingWeight -= weight;
             };
         }
 
@@ -101,12 +97,9 @@ export class PokemonService {
 
     format() {
         readFile('gen9randombattle.json', 'utf8', ((err, content) => {
-            // let allSets: Array<PokemonTemplateSet> = new Array<PokemonTemplateSet>();
             const brutSets = JSON.parse(content);
             const keys = Object.keys(brutSets);
-            // let index = 0;
             for (let key of keys) {
-                // index++;
                 let brutTemplate = brutSets[key];
                 let currentTemplate = new PokemonTemplateSet;
                 let brutTemplateRoles = brutTemplate.roles;
@@ -146,12 +139,19 @@ export class PokemonService {
                 const finalTemplate = this.pokemonTemplateSetsRepository.create(currentTemplate);
                 console.log(finalTemplate);
                 this.pokemonTemplateSetsRepository.save(finalTemplate);
-                // allSets.push(currentTemplate);
             }
-            // const finalOutput = JSON.stringify(Object.fromEntries(allSets));
-            // const finalOutput = JSON.stringify(allSets);
-            // console.log(finalOutput);
-            // writeFile('gen9randombattleformatted.json', finalOutput, (err => console.log(err)));
         }));
+    }
+
+    fetchAndSaveAbilities() {
+
+    }
+
+    fetchAndSaveItems() {
+
+    }
+
+    fetchAndSaveMoves() {
+
     }
 }

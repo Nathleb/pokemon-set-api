@@ -14,11 +14,4 @@ export class PokemonController {
         return this.pokemonService.findManyAtRandom(parameters);
     }
 
-    // @Get('/format')
-    // async format() {
-    //     return this.pokemonService.format();
-    // }
-
-
-
 }

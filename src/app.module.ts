@@ -10,7 +10,7 @@ import { KeyWord } from './pokemon/entities/keyWord.entity';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mongodb',
-      url: 'mongodb+srv://@cluster0.ugzwt.mongodb.net/PokemonRand9',
+      url: 'mongodb+srv://nathleb:H3TJFBkzv6EOGTgK@cluster0.ugzwt.mongodb.net/PokemonRand9',
       useNewUrlParser: true,
       logging: true,
       entities: [PokemonTemplateSet, KeyWord],
