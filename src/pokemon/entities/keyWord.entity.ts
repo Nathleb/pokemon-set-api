@@ -1,17 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ObjectID, ObjectIdColumn, Unique } from 'typeorm';
 
 @Entity()
 export class KeyWord {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+    @ObjectIdColumn()
+    id: ObjectID;
 
-    @Column()
+    @Column({ unique: true })
     name: string;
 
     @Column()
     description: string;
 
     @Column()
-    type: "ability" | "move" | "item";
+    type: "ability" | "item";
 }
