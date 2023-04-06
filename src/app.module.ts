@@ -8,8 +8,6 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-
-
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
