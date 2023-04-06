@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ObjectID, ObjectIdColumn } from 'typeorm';
+import { Entity, Column, ObjectID, ObjectIdColumn } from 'typeorm';
 
 @Entity()
 export class Move {
@@ -6,14 +6,16 @@ export class Move {
     @ObjectIdColumn()
     id: ObjectID;
 
-    @Column()
+    @Column({ unique: true })
     name: string;
     @Column()
     description: string;
     @Column()
-    pp: string;
+    pp: number;
     @Column()
-    damage: string;
+    damage: number;
+    @Column()
+    accuracy: number;
     @Column()
     type: string;
 }

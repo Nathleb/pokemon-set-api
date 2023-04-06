@@ -23,8 +23,8 @@ export class DataUtilsController {
     //     this.dataUtilsService.fetchAndSaveItems();
     // };
 
-    @Get('/moves')
-    fetchAndSaveMoves() {
-        this.dataUtilsService.fetchAndSaveMoves();
-    };
+    // @Get('/moves')
+    // fetchAndSaveMoves() {
+    //     this.dataUtilsService.fetchAndSaveMoves();
+    // };
 }

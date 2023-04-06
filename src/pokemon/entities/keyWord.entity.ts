@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ObjectID, ObjectIdColumn, Unique } from 'typeorm';
+import { Entity, Column, ObjectID, ObjectIdColumn } from 'typeorm';
 
 @Entity()
 export class KeyWord {

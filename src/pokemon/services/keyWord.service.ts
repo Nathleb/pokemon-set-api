@@ -4,11 +4,11 @@ import { MongoRepository } from "typeorm";
 import { KeyWord } from "../entities/keyWord.entity";
 
 @Injectable()
-export class MoveService {
+export class KeyWordService {
 
     constructor(@InjectRepository(KeyWord) private keywordsRepository: MongoRepository<KeyWord>) { };
 
-    async findManyByName(names: Array<string>) {
+    async findManyByName(names: Array<string>): Promise<Array<KeyWord>> {
         return await this.keywordsRepository.aggregate([
             {
                 $match: { name: { $in: names } }

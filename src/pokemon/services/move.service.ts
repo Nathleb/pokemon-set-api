@@ -8,7 +8,7 @@ export class MoveService {
 
     constructor(@InjectRepository(Move) private movesRepository: MongoRepository<Move>) { };
 
-    async findManyByName(names: Array<string>) {
+    async findManyByName(names: Array<string>): Promise<Array<Move>> {
         return await this.movesRepository.aggregate([
             {
                 $match: { name: { $in: names } }

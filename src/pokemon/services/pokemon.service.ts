@@ -7,13 +7,16 @@ import { GetRandomPokemonsParameterDto } from '../dtos/get-random-pokemons-param
 import { KeyWord } from '../entities/keyWord.entity';
 import { Move } from '../entities/move.entity';
 import { PokemonTemplateSet } from '../entities/pokemonTemplateSet.entity';
+import { KeyWordService } from './keyWord.service';
+import { MoveService } from './move.service';
 
 @Injectable()
 export class PokemonService {
 
-    constructor(@InjectRepository(PokemonTemplateSet) private pokemonTemplateSetsRepository: MongoRepository<PokemonTemplateSet>) { };
+    constructor(@InjectRepository(PokemonTemplateSet) private pokemonTemplateSetsRepository: MongoRepository<PokemonTemplateSet>, private moveService: MoveService,
+        private keyWordService: KeyWordService) { };
 
-    async findManyAtRandom(parameters: GetRandomPokemonsParameterDto) {
+    async findManyAtRandom(parameters: GetRandomPokemonsParameterDto): Promise<Array<PokemonSet>> {
         const { size } = parameters;
         const templates = await this.pokemonTemplateSetsRepository.aggregate([
             {
@@ -21,10 +24,26 @@ export class PokemonService {
             },
             { $sample: { size: size } },
         ]).toArray();
-        return templates.map((template) => this.convertTemplateToSet(template));
+
+        let keyWordMap: Map<string, KeyWord> = new Map<string, KeyWord>();
+        let moveMap: Map<string, Move> = new Map<string, Move>();
+
+        let finalSets: Array<PokemonSet> = templates.map((template) => this.convertTemplateToSet(template, keyWordMap, moveMap));
+
+        let detailedMoveList = this.moveService.findManyByName(Array.from(moveMap.keys()));
+        let detailedkeyWordList = this.keyWordService.findManyByName(Array.from(keyWordMap.keys()));
+        (await detailedkeyWordList).forEach(keyword => {
+            keyWordMap.set(keyword.name, keyword);
+        });
+        (await detailedMoveList).forEach(move => {
+            moveMap.set(move.name, move);
+        });
+
+        finalSets = this.addDescriptionToMovesAndKeyWords(finalSets, moveMap, keyWordMap);
+        return finalSets;
     }
 
-    convertTemplateToSet(template: PokemonTemplateSet): PokemonSet {
+    convertTemplateToSet(template: PokemonTemplateSet, keyWordMap: Map<string, KeyWord>, moveMap: Map<string, Move>): PokemonSet {
         let pokemonSet: PokemonSet = new PokemonSet();
         const { name, level, roles, baseStats, sprite, types } = template;
 
@@ -44,16 +63,28 @@ export class PokemonService {
         pokemonSet.baseStats = baseStats;
         pokemonSet.types = types;
         pokemonSet.sprite = sprite;
-        pokemonSet.item = this.pickAtRandomFromWeightedMap(items);
-        pokemonSet.teraType = this.pickAtRandomFromWeightedMap(teraTypes).name;
-        pokemonSet.ability = this.pickAtRandomFromWeightedMap(abilities);
+        pokemonSet.item = this.pickKeywordsAtRandomFromWeightedMap(items);
+        pokemonSet.teraType = this.pickKeywordsAtRandomFromWeightedMap(teraTypes).name;
+        pokemonSet.ability = this.pickKeywordsAtRandomFromWeightedMap(abilities);
+        keyWordMap.set(pokemonSet.item.name, new KeyWord());
+        keyWordMap.set(pokemonSet.ability.name, new KeyWord());
 
         pokemonSet.moves = this.pickMovesAtRandomFromWeightedMap(moves);
+        pokemonSet.moves.forEach((move) => moveMap.set(move.name, new Move()));
 
         return pokemonSet;
     }
 
-    pickAtRandomFromWeightedMap(weightedMap: Map<string, number>): KeyWord {
+    addDescriptionToMovesAndKeyWords(finalSets: Array<PokemonSet>, detailedMoveMap: Map<string, Move>, detailedkeyWordMap: Map<string, KeyWord>): Array<PokemonSet> {
+        finalSets.forEach(set => {
+            set.ability = detailedkeyWordMap.get(set.ability.name)!;
+            set.item = detailedkeyWordMap.get(set.item.name)!;
+            set.moves = set.moves.map(move => { return detailedMoveMap.get(move.name)!; });
+        });
+        return finalSets;
+    }
+
+    pickKeywordsAtRandomFromWeightedMap(weightedMap: Map<string, number>): KeyWord {
         let totalWeight = 0;
         for (let [key, weight] of weightedMap) {
             if (weight == 1) {

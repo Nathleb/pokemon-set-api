@@ -3,10 +3,11 @@ import { readFile } from "fs";
 import { Role } from "../classes/role";
 import { PokemonTemplateSet } from "../entities/pokemonTemplateSet.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { MongoRepository, QueryFailedError } from "typeorm";
+import { MongoRepository } from "typeorm";
 import { PokemonClient, MoveClient, ItemClient } from 'pokenode-ts';
 import { KeyWord } from "../entities/keyWord.entity";
 import { createInterface } from "readline";
+import { Move } from "../entities/move.entity";
 
 
 
@@ -15,7 +16,8 @@ import { createInterface } from "readline";
 export class DataUtilsService {
 
     constructor(@InjectRepository(PokemonTemplateSet) private pokemonTemplateSetsRepository: MongoRepository<PokemonTemplateSet>,
-        @InjectRepository(KeyWord) private keyWordRepository: MongoRepository<KeyWord>) { };
+        @InjectRepository(KeyWord) private keyWordRepository: MongoRepository<KeyWord>,
+        @InjectRepository(Move) private moveRepository: MongoRepository<Move>) { };
 
     formatAndSaveGen9RandomBattleJson() {
         readFile('gen9randombattle.json', 'utf8', (async (err, content) => {
@@ -96,8 +98,6 @@ export class DataUtilsService {
                             await this.keyWordRepository.save(ability);
                         } catch (error) {
                             if (error.name === 'BulkWriteError') {
-
-                            } else {
                                 throw error;
                             }
                         }
@@ -156,7 +156,51 @@ export class DataUtilsService {
 
     fetchAndSaveMoves() {
 
+        readFile('gen9randombattle.json', 'utf8', ((err, content) => {
+            const brutSets = JSON.parse(content);
+            const keys = Object.keys(brutSets);
+            let moves = new Set<string>();
+            for (let key of keys) {
+                let brutTemplate = brutSets[key];
+                let brutTemplateRoles = brutTemplate.roles;
+                let roleKeys = Object.keys(brutTemplateRoles);
+                for (let roleKey of roleKeys) {
+                    if (brutTemplateRoles[roleKey])
+                        Object.keys(brutTemplateRoles[roleKey].moves).forEach(name => moves.add(name));
+                }
+            }
+            const api = new MoveClient();
+            // console.log(moves);
+            Array.from(moves).forEach(async name => {
+                name = name.replace(/ /g, "-").toLowerCase();
+                name = name.replace(/[()]/g, "");
+                await api.getMoveByName(name)
+                    .then(async data => {
+                        let move = new Move();
+                        try {
+                            move.name = this.capitalizeWords(data.name.replace(/-/g, ' '));;
+                            move.damage = data.power ?? -1;
+                            move.accuracy = data.accuracy ?? -1;
+                            move.description = data.effect_entries?.filter(ab => ab.language.name == "en")[0]?.short_effect ?? "tbd";
+                            if (data.effect_chance) {
+                                move.description = move.description.replace("$effect_chance", data.effect_chance.toString());
+                            }
+                            move.pp = data.pp ?? 0;
+                            move.type = data.type?.name ?? "undefined";
+                            move = this.moveRepository.create(move);
+                            this.moveRepository.save(move);
+                            setTimeout(() => { }, 1000);
+                        } catch (e) {
+                            if (e.name != 'BulkWriteError') {
+                                console.log(name);
+                                console.log(e);
+                            }
+                        }
+                    });
+            });
+        }));
     }
+
 
     async fetchAndUpdateBaseStatsAndTypes(name: string, currentTemplate: PokemonTemplateSet) {
         const api = new PokemonClient();
@@ -193,7 +237,7 @@ export class DataUtilsService {
         let data = await this.pokemonTemplateSetsRepository.find({
             where: {
                 name: {
-                    $in: ["Oricorio-Pa'u"
+                    $in: [
                     ]
                 }
             }
