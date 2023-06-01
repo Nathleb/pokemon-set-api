@@ -8,7 +8,7 @@ export class PokemonController {
     constructor(private readonly pokemonService: PokemonService) { };
 
     @Get('/randomSample')
-    async getRandomPokemons(@Body() parameters: GetRandomPokemonsParameterDto) {
+    async getRandomPokemons(@Query() parameters: GetRandomPokemonsParameterDto) {
         return this.pokemonService.findManyAtRandom(parameters);
     }
 
