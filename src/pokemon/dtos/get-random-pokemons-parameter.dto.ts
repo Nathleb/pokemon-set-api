@@ -1,3 +1,6 @@
+import { IsNumberString } from "class-validator";
+
 export class GetRandomPokemonsParameterDto {
-    size: number;
+    @IsNumberString()
+    size: string;
 }

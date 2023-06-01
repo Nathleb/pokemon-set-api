@@ -17,7 +17,7 @@ export class PokemonService {
         private keyWordService: KeyWordService) { };
 
     async findManyAtRandom(parameters: GetRandomPokemonsParameterDto): Promise<Array<PokemonSet>> {
-        const { size } = parameters;
+        const size: number = parseInt(parameters.size, 10);
         const templates = await this.pokemonTemplateSetsRepository.aggregate([
             {
                 $match: {}
