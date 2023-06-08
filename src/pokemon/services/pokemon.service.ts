@@ -16,7 +16,7 @@ export class PokemonService {
     constructor(@InjectRepository(PokemonTemplateSet) private pokemonTemplateSetsRepository: MongoRepository<PokemonTemplateSet>, private moveService: MoveService,
         private keyWordService: KeyWordService) { };
 
-    async findManyAtRandom(parameters: GetRandomPokemonsParameterDto): Promise<Array<PokemonSet>> {
+    public async findManyAtRandom(parameters: GetRandomPokemonsParameterDto): Promise<Array<PokemonSet>> {
         const size: number = parseInt(parameters.size, 10);
         const templates = await this.pokemonTemplateSetsRepository.aggregate([
             {
@@ -43,7 +43,7 @@ export class PokemonService {
         return finalSets;
     }
 
-    convertTemplateToSet(template: PokemonTemplateSet, keyWordMap: Map<string, KeyWord>, moveMap: Map<string, Move>): PokemonSet {
+    private convertTemplateToSet(template: PokemonTemplateSet, keyWordMap: Map<string, KeyWord>, moveMap: Map<string, Move>): PokemonSet {
         let pokemonSet: PokemonSet = new PokemonSet();
         const { name, level, roles, baseStats, sprite, types } = template;
 
@@ -75,7 +75,7 @@ export class PokemonService {
         return pokemonSet;
     }
 
-    addDescriptionToMovesAndKeyWords(finalSets: Array<PokemonSet>, detailedMoveMap: Map<string, Move>, detailedkeyWordMap: Map<string, KeyWord>): Array<PokemonSet> {
+    private addDescriptionToMovesAndKeyWords(finalSets: Array<PokemonSet>, detailedMoveMap: Map<string, Move>, detailedkeyWordMap: Map<string, KeyWord>): Array<PokemonSet> {
         finalSets.forEach(set => {
             set.ability = detailedkeyWordMap.get(set.ability.name)!;
             set.item = detailedkeyWordMap.get(set.item.name)!;
@@ -84,7 +84,7 @@ export class PokemonService {
         return finalSets;
     }
 
-    pickKeywordsAtRandomFromWeightedMap(weightedMap: Map<string, number>): KeyWord {
+    private pickKeywordsAtRandomFromWeightedMap(weightedMap: Map<string, number>): KeyWord {
         let totalWeight = 0;
         for (let [key, weight] of weightedMap) {
             if (weight == 1) {
@@ -108,7 +108,7 @@ export class PokemonService {
         return new KeyWord();
     }
 
-    pickMovesAtRandomFromWeightedMap(weightedMap: Map<string, number>): Array<Move> {
+    private pickMovesAtRandomFromWeightedMap(weightedMap: Map<string, number>): Array<Move> {
         let pickedValues: Array<Move> = new Array<Move>();
         let remainingPicks = 0;
         for (let [key, weight] of weightedMap) {
@@ -140,7 +140,7 @@ export class PokemonService {
         return pickedValues;
     }
 
-    pickAtRandomRole(roles: Array<Role>) {
+    private pickAtRandomRole(roles: Array<Role>) {
         let remainingWeight = Math.random();
 
         for (let role of roles) {
