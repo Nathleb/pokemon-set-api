@@ -1,11 +1,11 @@
-import { Entity, ObjectID, Column, ObjectIdColumn } from 'typeorm';
+import { Entity, ObjectId, Column, ObjectIdColumn } from 'typeorm';
 import { Role } from '../classes/role';
 
 @Entity()
 export class PokemonTemplateSet {
 
     @ObjectIdColumn()
-    id: ObjectID;
+    id: ObjectId;
 
     @Column({ unique: true })
     name: string;

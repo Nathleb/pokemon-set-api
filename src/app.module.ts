@@ -7,6 +7,7 @@ import { Move } from './pokemon/entities/move.entity';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { WebsocketModule } from './websocket/websocket.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       isGlobal: true
     }),
     PokemonModule,
+    WebsocketModule,
   ],
   providers: [
     {

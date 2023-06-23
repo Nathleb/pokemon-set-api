@@ -1,10 +1,10 @@
-import { Entity, Column, ObjectID, ObjectIdColumn } from 'typeorm';
+import { Entity, Column, ObjectId, ObjectIdColumn } from 'typeorm';
 
 @Entity()
 export class Move {
 
     @ObjectIdColumn()
-    id: ObjectID;
+    id: ObjectId;
 
     @Column({ unique: true })
     name: string;
