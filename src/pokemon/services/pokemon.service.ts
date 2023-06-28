@@ -28,8 +28,10 @@ export class PokemonService {
         let keyWordMap: Map<string, KeyWord> = new Map<string, KeyWord>();
         let moveMap: Map<string, Move> = new Map<string, Move>();
 
+        // Convert every template to a set
         let finalSets: Array<PokemonSet> = templates.map((template) => this.convertTemplateToSet(template, keyWordMap, moveMap));
 
+        //fetch all descriptions and value of every move and keyword present in all the sets
         let detailedMoveList = this.moveService.findManyByName(Array.from(moveMap.keys()));
         let detailedkeyWordList = this.keyWordService.findManyByName(Array.from(keyWordMap.keys()));
         (await detailedkeyWordList).forEach(keyword => {
@@ -39,10 +41,18 @@ export class PokemonService {
             moveMap.set(move.name, move);
         });
 
+        //complete each set with the fetched data
         finalSets = this.addDescriptionToMovesAndKeyWords(finalSets, moveMap, keyWordMap);
         return finalSets;
     }
 
+    /**
+     * Create a PokemonSet from a pokemonTemplateSet
+     * @param template 
+     * @param keyWordMap 
+     * @param moveMap 
+     * @returns 
+     */
     private convertTemplateToSet(template: PokemonTemplateSet, keyWordMap: Map<string, KeyWord>, moveMap: Map<string, Move>): PokemonSet {
         let pokemonSet: PokemonSet = new PokemonSet();
         const { name, level, roles, baseStats, sprite, types } = template;
@@ -75,6 +85,13 @@ export class PokemonService {
         return pokemonSet;
     }
 
+    /**
+     * Complete Move and Keywords description of every set with the data contained in detailedkeyWordMap and detailedMoveMap
+     * @param finalSets 
+     * @param detailedMoveMap 
+     * @param detailedkeyWordMap 
+     * @returns 
+     */
     private addDescriptionToMovesAndKeyWords(finalSets: Array<PokemonSet>, detailedMoveMap: Map<string, Move>, detailedkeyWordMap: Map<string, KeyWord>): Array<PokemonSet> {
         finalSets.forEach(set => {
             set.ability = detailedkeyWordMap.get(set.ability.name)!;
@@ -84,6 +101,11 @@ export class PokemonService {
         return finalSets;
     }
 
+    /**
+     * Choose a Keyword randomly from a WeightedMap
+     * @param weightedMap
+     * @returns 
+     */
     private pickKeywordsAtRandomFromWeightedMap(weightedMap: Map<string, number>): KeyWord {
         let totalWeight = 0;
         for (let [key, weight] of weightedMap) {
@@ -108,6 +130,11 @@ export class PokemonService {
         return new KeyWord();
     }
 
+    /**
+     * Choose a set of 4 moves randomly from a weighted Map
+     * @param weightedMap 
+     * @returns 
+     */
     private pickMovesAtRandomFromWeightedMap(weightedMap: Map<string, number>): Array<Move> {
         let pickedValues: Array<Move> = new Array<Move>();
         let remainingPicks = 0;
@@ -140,6 +167,11 @@ export class PokemonService {
         return pickedValues;
     }
 
+    /**
+     * Choose a Role randomly from an Array of role with different weight attribute
+     * @param roles 
+     * @returns 
+     */
     private pickAtRandomRole(roles: Array<Role>) {
         let remainingWeight = Math.random();
 
