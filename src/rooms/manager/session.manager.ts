@@ -11,7 +11,6 @@ export class SessionManager {
         const sessionId = randomUUID();
         const session: Session = {
             id: sessionId,
-            pseudo: sessionId
         };
 
         this.sessions.set(sessionId, session);

@@ -18,13 +18,4 @@ export class SessionService {
     public deleteSession(sessionId: string): void {
         this.sessionManager.deleteSession(sessionId);
     }
-
-    public updatePseudo(sessionId: string, pseudo: string) {
-        let session = this.getSession(sessionId);
-        if (!session) {
-            return;
-        }
-        session.pseudo = pseudo;
-        this.sessionManager.updateSession(session);
-    }
 }

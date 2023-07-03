@@ -1,7 +1,11 @@
+import { Player } from "./player";
+import { Session } from "./session";
+
+
 export interface Room {
     id: string;
-    owner: string,
+    owner: Session,
     size: number,
-    classification: string;
-    players: string[];
+    classification: "private" | "public";
+    players: Set<Player>;
 }

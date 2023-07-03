@@ -21,10 +21,4 @@ export class SessionGateway implements OnGatewayConnection, OnGatewayDisconnect 
     this.sessionService.deleteSession(sessionId);
     console.log('Client disconnected:', sessionId);
   }
-
-  @SubscribeMessage('pseudo')
-  handleMessage(client: Socket, data: string) {
-    const sessionId = client.data.sessionId;
-    this.sessionService.updatePseudo(sessionId, data);
-  }
 } 	
