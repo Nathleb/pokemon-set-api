@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PokemonTemplateSet } from './pokemon/entities/pokemonTemplateSet.entity';
-import { PokemonModule } from './pokemon/pokemonSet.module';
+import { PokemonModule } from './pokemon/pokemon.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { KeyWord } from './pokemon/entities/keyWord.entity';
 import { Move } from './pokemon/entities/move.entity';

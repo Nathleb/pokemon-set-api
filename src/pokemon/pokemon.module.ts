@@ -14,5 +14,6 @@ import { MoveService } from './services/move.service';
   imports: [TypeOrmModule.forFeature([PokemonTemplateSet, KeyWord, Move])],
   controllers: [PokemonController, DataUtilsController],
   providers: [PokemonService, DataUtilsService, KeyWordService, MoveService],
+  exports: [PokemonService]
 })
 export class PokemonModule { }

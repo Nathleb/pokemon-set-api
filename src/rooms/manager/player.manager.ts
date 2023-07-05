@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { randomUUID } from "crypto";
 import { Player } from "../entities/player";
 import { Session } from "../entities/session";
 
@@ -7,12 +8,14 @@ import { Session } from "../entities/session";
 export class PlayerManager {
     private players: Map<string, Player> = new Map<string, Player>();
 
-    createPlayer(session: Session): Player {
+    createPlayer(session: Session, sit: number): Player {
         const player: Player = {
             id: session.id,
-            pseudo: session.pseudo,
+            pseudo: `Player-${randomUUID().substring(0, 6)}`,
             team: new Array(),
-            toChoseFrom: new Array()
+            toChoseFrom: new Array(),
+            sit: sit,
+            hasPicked: false
         };
 
         this.players.set(player.id, player);

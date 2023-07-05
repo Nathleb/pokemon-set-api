@@ -1,18 +1,21 @@
 import { Room } from '../entities/room';
-import { Player } from '../entities/player';
+import { PlayerDTO } from './playerDTO';
 
 export class RoomDTO {
     id: string;
-    ownerId: string;
     size: number;
-    classification: "private" | "public";
-    players: Player[];
+    players: Partial<PlayerDTO>[];
+    readyToPick: boolean;
 
     constructor(room: Room) {
         this.id = room.id;
-        this.ownerId = room.owner.id;
         this.size = room.size;
-        this.classification = room.classification;
-        this.players = Array.from(room.players);
+        this.players = Array.from(room.players.values()).map(player => {
+            return {
+                pseudo: player.pseudo,
+                sit: player.sit
+            };
+        });
+        this.readyToPick = room.readyToPick;
     }
 }
