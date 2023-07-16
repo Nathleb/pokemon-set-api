@@ -1,5 +1,5 @@
 import { PokemonSet } from 'src/pokemon/classes/pokemonSet';
-import { Player } from '../entities/player';
+import { Session } from '../entities/session';
 
 export class PlayerDTO {
     pseudo: string;
@@ -8,7 +8,7 @@ export class PlayerDTO {
     sit: number;
     hasPicked: boolean;
 
-    constructor(player: Player) {
+    constructor(player: Session) {
         this.pseudo = player.pseudo;
         this.team = player.team;
         this.toChoseFrom = player.toChoseFrom;
