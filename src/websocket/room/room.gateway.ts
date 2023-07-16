@@ -1,14 +1,15 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { validate } from 'class-validator';
 import { Server, Socket } from 'socket.io';
-import { RoomDTO } from 'src/rooms/dto/roomDTO';
-import { GameParameters } from 'src/rooms/entities/gameParameters';
-import { Player } from 'src/rooms/entities/player';
+import { RoomDTO } from 'src/rooms/dtos/room.dto';
 import { Room } from 'src/rooms/entities/room';
 import { RoomService } from 'src/rooms/services/room.service';
 import { SessionService } from 'src/rooms/services/session.service';
 
-@WebSocketGateway()
+@WebSocketGateway(
+  {
+    cors: true
+  }
+)
 export class RoomGateway {
 
   constructor(private readonly roomService: RoomService, private readonly sessionService: SessionService) {
@@ -16,6 +17,21 @@ export class RoomGateway {
 
   @WebSocketServer()
   private server: Server;
+
+  handleConnection(client: Socket) {
+    const session = this.sessionService.createSession(client.id);
+    console.log('Client connected:', session.socketId);
+  }
+
+  handleDisconnect(client: Socket) {
+    const session = this.sessionService.getSession(client.id);
+    if (!session) {
+      throw new Error;
+    }
+    this.roomService.quitRoom(session);
+    this.sessionService.deleteSession(session.socketId);
+    console.log('Client disconnected:', session.socketId);
+  }
 
   //Room
   /**
@@ -26,97 +42,35 @@ export class RoomGateway {
    * @returns the newly created room
    */
   @SubscribeMessage('createRoom')
-  createRoom(client: Socket, payload: any): RoomDTO {
+  createRoom(client: Socket, payload: string): void {
     const { size } = JSON.parse(payload);
-    const session = this.sessionService.getSession(client.data.sessionId);
+    const session = this.sessionService.getSession(client.id);
     if (!session) {
       throw new Error;
     }
 
-    return new RoomDTO(this.roomService.createRoom(session, size));
+    const room: Room = this.roomService.createRoom(session, size);
+    this.server.in(session.socketId).socketsJoin(room.id);
+    this.server.emit('createRoom', new RoomDTO(room));
   }
 
-
   /**
-   * Let the client join an existing room, the roomId is provided in the payload
-   * TODO payload validation
-   * @param client 
-   * @param payload 
-   * @returns the updated Room
-   */
+     * Let the client join an existing room, the roomId is provided in the payload
+     * TODO payload validation
+     * @param client 
+     * @param payload 
+     * @returns the updated Room
+     */
   @SubscribeMessage('joinRoom')
-  joinRoom(client: Socket, payload: any): RoomDTO {
+  joinRoom(client: Socket, payload: any): void {
     const { roomId } = JSON.parse(payload);
-    const session = this.sessionService.getSession(client.data.sessionId);
+    const session = this.sessionService.getSession(client.id);
     if (!session) {
       throw new Error;
     }
-
-    return new RoomDTO(this.roomService.joinRoom(session, roomId));
+    const room: Room = this.roomService.joinRoom(session, roomId);
+    this.server.in(session.socketId).socketsJoin(room.id);
+    this.server.in(room.id).emit("joinRoom", new RoomDTO(room));
   }
 
-
-  /**
-   * Let the client leave an existing room, the roomId is provided in the payload
-   * TODO payload validation
-   * @param client 
-   * @param payload 
-   * @returns the updated Room
-   */
-  @SubscribeMessage('quitRoom')
-  quitRoom(client: Socket, payload: any): RoomDTO {
-    const { roomId } = JSON.parse(payload);
-    const session = this.sessionService.getSession(client.data.sessionId);
-    if (!session) {
-      throw new Error;
-    }
-
-    return new RoomDTO(this.roomService.quitRoom(session, roomId));
-  }
-
-  /* @SubscribeMessage('deleteRoom')
-   deleteRoom(client: Socket, payload: any): void {
-     const { roomId } = JSON.parse(payload);
-
-     return this.roomService.deleteRoom(roomId);
-   } */
-
-  // Game
-
-  //TODO Validation payload
-  @SubscribeMessage("startGame")
-  async startGame(client: Socket, payload: any): Promise<RoomDTO> {
-    const gameParameter: GameParameters = JSON.parse(payload);
-    validate(gameParameter);
-
-    const session = this.sessionService.getSession(client.data.sessionId);
-    if (!session) {
-      throw new Error;
-    }
-
-    return new RoomDTO(await this.roomService.startGame(session, gameParameter));
-  }
-
-  @SubscribeMessage("getPlayer")
-  getPlayer(client: Socket, payload: any): Player {
-    const { roomId } = payload;
-    const session = this.sessionService.getSession(client.data.sessionId);
-    if (!session) {
-      throw new Error;
-    }
-
-    return this.roomService.getPlayer(session, roomId);
-  }
-
-  @SubscribeMessage("pickPokemon")
-  pickPokemon(client: Socket, payload: any): RoomDTO {
-    const { roomId, pkmnName } = payload;
-
-    const session = this.sessionService.getSession(client.data.sessionId);
-    if (!session) {
-      throw new Error;
-    }
-
-    return new RoomDTO(this.roomService.pickPokemon(session, roomId, pkmnName));
-  }
 }

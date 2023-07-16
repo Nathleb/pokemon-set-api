@@ -7,26 +7,32 @@ import { Session } from "../entities/session";
 export class SessionManager {
     private sessions: Map<string, Session> = new Map<string, Session>();
 
-    createSession(): Session {
-        const sessionId = randomUUID();
+    createSession(socketId: string): Session {
         const session: Session = {
-            id: sessionId,
+            socketId: socketId,
+            pseudo: `Player-${randomUUID().substring(0, 6)}`,
+            team: new Array(),
+            toChoseFrom: new Array(),
+            hasPicked: false,
+            inRoomId: "Has not joined a room yet",
+            sit: -1,
         };
 
-        this.sessions.set(sessionId, session);
+        this.sessions.set(socketId, session);
         return session;
     }
 
-    getSession(sessionId: string): Session | undefined {
-        return this.sessions.get(sessionId);
+    getSession(socketId: string): Session | undefined {
+        return this.sessions.get(socketId);
     }
 
-    deleteSession(sessionId: string): void {
-        this.sessions.delete(sessionId);
-    }
+    deleteSession(socketId: string): void {
+        this.sessions.delete(socketId);
+    };
 
-    updateSession(session: Session): void {
-        this.sessions.set(session.id, session);
+    updateSession(session: Session): Session {
+        this.sessions.set(session.socketId, session);
+        return session;
     }
 }
 

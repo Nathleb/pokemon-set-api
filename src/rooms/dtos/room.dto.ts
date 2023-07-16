@@ -1,5 +1,5 @@
 import { Room } from '../entities/room';
-import { PlayerDTO } from './playerDTO';
+import { PlayerDTO } from './player.dto';
 
 export class RoomDTO {
     id: string;

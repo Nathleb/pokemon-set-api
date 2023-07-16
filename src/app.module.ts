@@ -7,7 +7,6 @@ import { Move } from './pokemon/entities/move.entity';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { SessionGateway } from './websocket/session/session.gateway';
 import { RoomGateway } from './websocket/room/room.gateway';
 import { RoomModule } from './rooms/room.module';
 
@@ -43,7 +42,6 @@ import { RoomModule } from './rooms/room.module';
       provide: APP_GUARD,
       useClass: ThrottlerGuard
     },
-    SessionGateway,
     RoomGateway
   ]
 })

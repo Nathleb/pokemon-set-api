@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { randomUUID } from "crypto";
-import { Player } from "../entities/player";
 import { Room } from "../entities/room";
 import { Session } from "../entities/session";
 
@@ -15,7 +14,7 @@ export class RoomManager {
             id: roomId,
             owner: owner,
             size: size,
-            players: new Map<string, Player>(),
+            players: new Map<string, Session>(),
             readyToPick: true
         };
 
@@ -25,6 +24,10 @@ export class RoomManager {
 
     getRoom(roomId: string): Room | undefined {
         return this.rooms.get(roomId);
+    }
+
+    getAllRoom(): Room[] {
+        return Array.from(this.rooms.values());
     }
 
     deleteRoom(roomId: string): void {
