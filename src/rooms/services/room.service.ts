@@ -20,7 +20,7 @@ export class RoomService {
     joinRoom(playerSession: Session, roomId: string): Room {
         let room = this.roomanager.getRoom(roomId);
         if (!room) {
-            throw new Error;
+            throw new Error("Room not found.");
         }
 
         this.quitRoom(playerSession);
@@ -33,13 +33,25 @@ export class RoomService {
         return this.roomanager.updateRoom(room);
     }
 
-    quitRoom(playerSession: Session): void {
-        if (playerSession.inRoomId !== DEFAULT.NO_ROOM) {
-            let room = this.roomanager.getRoom(playerSession.inRoomId);
-            if (room) {
-                room.players.delete(playerSession.socketId);
-            }
+    quitRoom(playerSession: Session): string {
+        const { inRoomId, socketId } = playerSession;
+        if (inRoomId === DEFAULT.NO_ROOM) {
+            return DEFAULT.NO_ROOM;
         }
+
+        const room = this.roomanager.getRoom(inRoomId);
+        if (!room) {
+            throw new Error("Room not found.");
+        }
+
+        room.players.delete(socketId);
+        if (room.players.size > 0) {
+            this.roomanager.updateRoom(room);
+        } else {
+            this.roomanager.deleteRoom(room.id);
+        }
+
+        return room.players.size > 0 ? room.id : DEFAULT.NO_ROOM;
     }
 
     getAllRooms(): Room[] {

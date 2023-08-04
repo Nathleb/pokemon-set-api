@@ -29,7 +29,7 @@ import { RoomModule } from './rooms/room.module';
     }),
     ThrottlerModule.forRoot({
       ttl: 60,
-      limit: 10,
+      limit: 400,
     }),
     ConfigModule.forRoot({
       isGlobal: true

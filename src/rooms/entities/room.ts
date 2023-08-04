@@ -1,12 +1,14 @@
-import { GameParameters } from "./gameParameters";
 import { Session } from "./session";
 
 
 export interface Room {
     id: string;
-    owner: Session,
+    ownerId: string;
+    name: string,
     size: number,
     players: Map<string, Session>;
-    gameParameters?: GameParameters;
+    nbrBooster: number,
+    pkmnPerBooster: number,
     readyToPick: boolean;
+    boostersLeft: number;
 }
