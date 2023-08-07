@@ -104,10 +104,9 @@ export class RoomGateway {
     }
 
     try {
-      const room = await this.gameService.nextBooster(session, roomId);
+      const room = await this.gameService.nextBooster(session.socketId, roomId);
       if (room) {
         room.players.forEach(player => {
-          console.log(player);
           this.server.in(player.socketId).emit("nextPick", new PlayerDTO(player));
         });
       }
@@ -116,4 +115,27 @@ export class RoomGateway {
     }
   }
 
+  @SubscribeMessage('nextPick')
+  async nextPick(client: Socket, payload: any) {
+    const { roomId, pickedPokemonName } = JSON.parse(payload);
+
+    const session = this.sessionService.getSession(client.id);
+    if (!session) {
+      throw new Error;
+    }
+
+    let room: Room | undefined = this.gameService.nextPick(session, roomId, pickedPokemonName);
+    if (room) {
+      if (this.gameService.isNextRotation(room)) {
+        room = await this.gameService.nextRotation(room);
+        room.players.forEach(player => {
+          this.server.in(player.socketId).emit("nextPick", new PlayerDTO(player));
+        });
+      }
+      else {
+        const player = room.players.get(session.socketId);
+        this.server.in(session.socketId).emit("nextPick", new PlayerDTO(player!));
+      }
+    }
+  }
 }

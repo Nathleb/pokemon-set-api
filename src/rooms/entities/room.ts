@@ -1,3 +1,4 @@
+import { PokemonSet } from "src/pokemon/classes/pokemonSet";
 import { Session } from "./session";
 
 
@@ -11,4 +12,5 @@ export interface Room {
     pkmnPerBooster: number,
     readyToPick: boolean;
     boostersLeft: number;
+    remainingPool: PokemonSet[];
 }

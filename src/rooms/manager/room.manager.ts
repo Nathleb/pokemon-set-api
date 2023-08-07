@@ -19,7 +19,8 @@ export class RoomManager {
             readyToPick: true,
             boostersLeft: nbrBooster,
             nbrBooster: nbrBooster,
-            pkmnPerBooster: pkmnPerBooster
+            pkmnPerBooster: pkmnPerBooster,
+            remainingPool: new Array()
         };
 
         this.rooms.set(roomId, Room);
