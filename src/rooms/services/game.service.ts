@@ -71,7 +71,6 @@ export class GameService {
             console.log(index);
             if (index !== -1) {
                 player.team.push(player.toChoseFrom[index]);
-                player.toChoseFrom[index].name;
                 player.toChoseFrom.splice(index, 1);
                 player.hasPicked = true;
             }
