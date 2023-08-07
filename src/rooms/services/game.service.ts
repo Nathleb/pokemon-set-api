@@ -67,9 +67,11 @@ export class GameService {
             if (!player) {
                 throw new Error("Player not found.");
             }
-            let index = player.toChoseFrom.findIndex(pokemonSet => pokemonSet.name = pickedPokemonName);
+            let index = player.toChoseFrom.findIndex(pokemonSet => pokemonSet.name == pickedPokemonName);
+            console.log(index);
             if (index !== -1) {
                 player.team.push(player.toChoseFrom[index]);
+                player.toChoseFrom[index].name;
                 player.toChoseFrom.splice(index, 1);
                 player.hasPicked = true;
             }
@@ -93,16 +95,19 @@ export class GameService {
     async nextRotation(room: Room): Promise<Room> {
         let players: Session[] = Array.from(room.players.values());
         if (players[0].toChoseFrom.length == 0) {
-            return (await this.nextBooster(room.id, room.ownerId))!;
+            console.log(room.id + "nextBooster");
+            return (await this.nextBooster(room.ownerId, room.id))!;
         }
 
         for (let i = 0; i < players.length - 1; i++) {
+            console.log(players);
             const currentPlayer = players[i];
             const nextPlayer = players[i + 1];
             [currentPlayer.toChoseFrom, nextPlayer.toChoseFrom] = [nextPlayer.toChoseFrom, currentPlayer.toChoseFrom];
             currentPlayer.hasPicked = false;
             room.players.set(currentPlayer.socketId, currentPlayer);
             if (i == players.length - 2) {
+                nextPlayer.hasPicked = false;
                 room.players.set(nextPlayer.socketId, nextPlayer);
             }
         }

@@ -7,7 +7,7 @@ import { Session } from "../entities/session";
 export class RoomManager {
     private rooms: Map<string, Room> = new Map<string, Room>();
 
-    createRoom(owner: Session, size: number, nbrBooster: number = 2, pkmnPerBooster: number = 6): Room {
+    createRoom(owner: Session, size: number, nbrBooster: number = 4, pkmnPerBooster: number = 2): Room {
         const roomId = `room::${randomUUID()}`;
 
         const Room: Room = {
@@ -16,7 +16,6 @@ export class RoomManager {
             name: `${owner.pseudo}::${roomId.substring(roomId.length - 4, roomId.length)}`,
             size: size,
             players: new Map<string, Session>(),
-            readyToPick: true,
             boostersLeft: nbrBooster,
             nbrBooster: nbrBooster,
             pkmnPerBooster: pkmnPerBooster,

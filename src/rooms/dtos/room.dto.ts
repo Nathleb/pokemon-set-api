@@ -6,7 +6,6 @@ export class RoomDTO {
     size: number;
     players: Partial<PlayerDTO>[];
     name: string;
-    readyToPick: boolean;
 
     constructor(room: Room) {
         this.id = room.id;
@@ -17,7 +16,6 @@ export class RoomDTO {
                 sit: player.sit
             };
         });
-        this.readyToPick = room.readyToPick;
         this.name = room.name;
     }
 }

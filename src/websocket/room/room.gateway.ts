@@ -118,6 +118,7 @@ export class RoomGateway {
   @SubscribeMessage('nextPick')
   async nextPick(client: Socket, payload: any) {
     const { roomId, pickedPokemonName } = JSON.parse(payload);
+    console.log(pickedPokemonName);
 
     const session = this.sessionService.getSession(client.id);
     if (!session) {
@@ -132,10 +133,6 @@ export class RoomGateway {
           this.server.in(player.socketId).emit("nextPick", new PlayerDTO(player));
         });
       }
-      else {
-        const player = room.players.get(session.socketId);
-        this.server.in(session.socketId).emit("nextPick", new PlayerDTO(player!));
-      }
     }
   }
-}
+} 

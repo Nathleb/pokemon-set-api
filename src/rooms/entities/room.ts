@@ -10,7 +10,6 @@ export interface Room {
     players: Map<string, Session>;
     nbrBooster: number,
     pkmnPerBooster: number,
-    readyToPick: boolean;
     boostersLeft: number;
     remainingPool: PokemonSet[];
 }
