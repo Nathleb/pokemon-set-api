@@ -20,6 +20,10 @@ export class SessionService {
         this.sessionManager.deleteSession(socketId);
     }
 
+    public updateSession(playerSession: Session): Session {
+        return this.sessionManager.updateSession(playerSession);
+    }
+
     public resetPlayer(playerSession: Session, roomId: string, sit: number): Session {
         playerSession.hasPicked = false;
         playerSession.inRoomId = roomId;

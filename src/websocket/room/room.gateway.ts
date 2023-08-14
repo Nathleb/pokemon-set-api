@@ -48,12 +48,18 @@ export class RoomGateway {
     const { size } = JSON.parse(payload);
     const session = this.sessionService.getSession(client.id);
     if (!session) {
-      throw new Error;
+      client.emit("error", "Error while creating room");
+      return;
     }
 
-    const room: Room = this.roomService.createRoom(session, size);
-    this.server.in(session.socketId).socketsJoin(room.id);
-    this.server.in(room.id).emit('joinRoom', new RoomDTO(room));
+    try {
+      const room: Room = this.roomService.createRoom(session, size);
+      this.server.in(session.socketId).socketsJoin(room.id);
+      this.server.in(session.socketId).emit('createRoom', room.id);
+    }
+    catch (error) {
+      client.emit("error", `Error while creating room: ${error}`);
+    }
   }
 
   /**
@@ -68,11 +74,17 @@ export class RoomGateway {
     const { roomId } = JSON.parse(payload);
     const session = this.sessionService.getSession(client.id);
     if (!session) {
-      throw new Error;
+      client.emit("error", "Error while joining room");
+      return;
     }
-    const room: Room = this.roomService.joinRoom(session, roomId);
-    this.server.in(session.socketId).socketsJoin(room.id);
-    this.server.in(room.id).emit("joinRoom", new RoomDTO(room));
+    try {
+      const room: Room = this.roomService.joinRoom(session, roomId);
+      this.server.in(session.socketId).socketsJoin(room.id);
+      this.server.in(room.id).emit("joinRoom", new RoomDTO(room));
+    }
+    catch (error) {
+      client.emit("error", `Error while joining room: ${error}`);
+    }
   }
 
   /**
@@ -95,7 +107,7 @@ export class RoomGateway {
 
   /*<--------------------------------------GAME-------------------------------------->*/
 
-  @SubscribeMessage('nextBooster')
+  @SubscribeMessage('startGame')
   async nextBooster(client: Socket, payload: any) {
     const { roomId } = JSON.parse(payload);
     const session = this.sessionService.getSession(client.id);
@@ -111,28 +123,38 @@ export class RoomGateway {
         });
       }
     } catch (error) {
-      console.error(error);
+      client.emit("error", `Error while starting game: ${error}`);
+      this.server.in(roomId).emit("error", `Error while starting game: ${error}`);
     }
   }
 
   @SubscribeMessage('nextPick')
   async nextPick(client: Socket, payload: any) {
     const { roomId, pickedPokemonName } = JSON.parse(payload);
-    console.log(pickedPokemonName);
 
     const session = this.sessionService.getSession(client.id);
     if (!session) {
-      throw new Error;
+      client.emit("error", `Error while processing the game`);
+      return;
     }
 
-    let room: Room | undefined = this.gameService.nextPick(session, roomId, pickedPokemonName);
-    if (room) {
-      if (this.gameService.isNextRotation(room)) {
-        room = await this.gameService.nextRotation(room);
-        room.players.forEach(player => {
-          this.server.in(player.socketId).emit("nextPick", new PlayerDTO(player));
-        });
+    try {
+      let room: Room | undefined = this.gameService.nextPick(session, roomId, pickedPokemonName);
+      if (room) {
+        if (this.gameService.isNextRotation(room)) {
+          room = await this.gameService.nextRotation(room);
+          room.players.forEach(player => {
+            this.server.in(player.socketId).emit("nextPick", new PlayerDTO(player));
+          });
+        }
+        else {
+          client.emit("nextPick", new PlayerDTO(room.players.get(session.socketId)!));
+        }
       }
+    }
+    catch (error) {
+      client.emit("error", `Error while processing the game: ${error}`);
+      this.server.in(roomId).emit("error", `Error while processing the game: ${error}`);
     }
   }
 } 

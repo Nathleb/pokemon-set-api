@@ -4,7 +4,6 @@ import { GetRandomPokemonsParameterDto } from 'src/pokemon/dtos/get-random-pokem
 import { PokemonService } from 'src/pokemon/services/pokemon.service';
 import { Room } from '../entities/room';
 import { Session } from '../entities/session';
-import { DEFAULT } from '../enums/default.enum';
 import { RoomManager } from '../manager/room.manager';
 import { SessionService } from './session.service';
 
@@ -33,7 +32,9 @@ export class GameService {
             return this.roomanager.updateRoom(room);
         }
         catch (error) {
-            console.error(error);
+            if (error.message !== "Bad privileges") {
+                throw new Error(error);
+            }
         }
     }
 
@@ -64,11 +65,10 @@ export class GameService {
 
             let player = room.players.get(session.socketId);
 
-            if (!player) {
+            if (!player || player.hasPicked) {
                 throw new Error("Player not found.");
             }
             let index = player.toChoseFrom.findIndex(pokemonSet => pokemonSet.name == pickedPokemonName);
-            console.log(index);
             if (index !== -1) {
                 player.team.push(player.toChoseFrom[index]);
                 player.toChoseFrom.splice(index, 1);
@@ -77,7 +77,7 @@ export class GameService {
             room.players.set(session.socketId, player);
             return this.roomanager.updateRoom(room);
         } catch (error) {
-            console.error(error);
+            throw new Error(error);
         }
 
     }
@@ -94,12 +94,10 @@ export class GameService {
     async nextRotation(room: Room): Promise<Room> {
         let players: Session[] = Array.from(room.players.values());
         if (players[0].toChoseFrom.length == 0) {
-            console.log(room.id + "nextBooster");
             return (await this.nextBooster(room.ownerId, room.id))!;
         }
 
         for (let i = 0; i < players.length - 1; i++) {
-            console.log(players);
             const currentPlayer = players[i];
             const nextPlayer = players[i + 1];
             [currentPlayer.toChoseFrom, nextPlayer.toChoseFrom] = [nextPlayer.toChoseFrom, currentPlayer.toChoseFrom];

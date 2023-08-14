@@ -45,6 +45,8 @@ export class RoomService {
         }
 
         room.players.delete(socketId);
+        playerSession.inRoomId = DEFAULT.NO_ROOM;
+        this.sessionService.updateSession(playerSession);
         if (room.players.size > 0) {
             this.roomanager.updateRoom(room);
         } else {

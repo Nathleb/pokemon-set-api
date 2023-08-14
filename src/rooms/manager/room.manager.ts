@@ -8,7 +8,7 @@ export class RoomManager {
     private rooms: Map<string, Room> = new Map<string, Room>();
 
     createRoom(owner: Session, size: number, nbrBooster: number = 4, pkmnPerBooster: number = 2): Room {
-        const roomId = `room::${randomUUID()}`;
+        const roomId = `${randomUUID()}`;
 
         const Room: Room = {
             id: roomId,
