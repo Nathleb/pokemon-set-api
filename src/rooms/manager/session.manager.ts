@@ -7,7 +7,7 @@ import { Session } from "../entities/session";
 export class SessionManager {
     private sessions: Map<string, Session> = new Map<string, Session>();
 
-    createSession(socketId: string): Session {
+    createSession(socketId: string, deviceIdentifier: string): Session {
         const session: Session = {
             socketId: socketId,
             pseudo: `Player-${randomUUID().substring(0, 6)}`,
@@ -16,6 +16,7 @@ export class SessionManager {
             hasPicked: false,
             inRoomId: "Has not joined a room yet",
             sit: -1,
+            deviceIdentifier: deviceIdentifier
         };
 
         this.sessions.set(socketId, session);
@@ -33,6 +34,10 @@ export class SessionManager {
     updateSession(session: Session): Session {
         this.sessions.set(session.socketId, session);
         return session;
+    }
+
+    getAllSessions(): Session[] {
+        return Array.from(this.sessions.values());
     }
 }
 

@@ -2,6 +2,7 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { Server, Socket } from 'socket.io';
 import { PlayerDTO } from 'src/rooms/dtos/player.dto';
 import { RoomDTO } from 'src/rooms/dtos/room.dto';
+import { GameParameters } from 'src/rooms/entities/gameParameters';
 import { Room } from 'src/rooms/entities/room';
 import { GameService } from 'src/rooms/services/game.service';
 import { RoomService } from 'src/rooms/services/room.service';
@@ -21,8 +22,13 @@ export class RoomGateway {
   private server: Server;
 
   handleConnection(client: Socket) {
-    const session = this.sessionService.createSession(client.id);
-    console.log('Client connected:', session.socketId);
+    const deviceIdentifier = client.handshake.query.deviceIdentifier;
+    if (typeof deviceIdentifier === 'string') {
+      const session = this.sessionService.reconnectSessionByDeviceIdentifier(client.id, deviceIdentifier) || this.sessionService.createSession(client.id, deviceIdentifier);
+      console.log('Client connected:', session.socketId);
+      console.log('Client device:', session.deviceIdentifier);
+      console.log(session);
+    }
   }
 
   handleDisconnect(client: Socket) {
@@ -45,7 +51,7 @@ export class RoomGateway {
    */
   @SubscribeMessage('createRoom')
   createRoom(client: Socket, payload: string): void {
-    const { size } = JSON.parse(payload);
+    const gameParameters: GameParameters = JSON.parse(payload);
     const session = this.sessionService.getSession(client.id);
     if (!session) {
       client.emit("error", "Error while creating room");
@@ -53,7 +59,7 @@ export class RoomGateway {
     }
 
     try {
-      const room: Room = this.roomService.createRoom(session, size);
+      const room: Room = this.roomService.createRoom(session, gameParameters);
       this.server.in(session.socketId).socketsJoin(room.id);
       this.server.in(session.socketId).emit('createRoom', room.id);
     }
@@ -150,6 +156,7 @@ export class RoomGateway {
         else {
           client.emit("nextPick", new PlayerDTO(room.players.get(session.socketId)!));
         }
+        this.server.in(roomId).emit('updateHasPickedStatus', new RoomDTO(room).players);
       }
     }
     catch (error) {
@@ -157,4 +164,16 @@ export class RoomGateway {
       this.server.in(roomId).emit("error", `Error while processing the game: ${error}`);
     }
   }
+
+
+  @SubscribeMessage('isPlayerOwner')
+  isPlayerOwner(client: Socket, payload: any) {
+    const { roomId } = JSON.parse(payload);
+    const session = this.sessionService.getSession(client.id);
+    if (!session) {
+      client.emit("error", `Error while processing the game`);
+      return false;
+    }
+    client.emit('isPlayerOwner', this.roomService.isPlayerOwner(roomId, session));
+  };
 } 

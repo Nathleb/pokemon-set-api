@@ -7,9 +7,9 @@ export class PokemonController {
 
     constructor(private readonly pokemonService: PokemonService) { };
 
-    @Get('/randomSample')
-    async getRandomPokemons(@Query(ValidationPipe) parameters: GetRandomPokemonsParameterDto) {
-        return this.pokemonService.findManyAtRandom(parameters);
-    }
+    // @Get('/randomSample')
+    // async getRandomPokemons(@Query(ValidationPipe) parameters: GetRandomPokemonsParameterDto) {
+    //     return this.pokemonService.findManyAtRandom(parameters);
+    // }
 
 }

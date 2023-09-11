@@ -8,8 +8,8 @@ export class SessionService {
 
     constructor(private readonly sessionManager: SessionManager) { };
 
-    public createSession(socketId: string): Session {
-        return this.sessionManager.createSession(socketId);
+    public createSession(socketId: string, deviceIdentifier: string): Session {
+        return this.sessionManager.createSession(socketId, deviceIdentifier);
     }
 
     public getSession(socketId: string): Session | undefined {
@@ -31,5 +31,17 @@ export class SessionService {
         playerSession.team = new Array();
         playerSession.toChoseFrom = new Array();
         return this.sessionManager.updateSession(playerSession);
+    }
+
+    public reconnectSessionByDeviceIdentifier(socketId: string, deviceIdentifier: string): Session | undefined {
+        // const sessions: Session[] = this.sessionManager.getAllSessions();
+        // const index = sessions.findIndex(session => session.deviceIdentifier === deviceIdentifier);
+        // if (index != -1) {
+        //     let session = sessions[index];
+        //     this.sessionManager.deleteSession(session.socketId);
+        //     session.socketId = socketId;
+        //     return this.sessionManager.updateSession(session);
+        // }
+        return undefined;
     }
 }

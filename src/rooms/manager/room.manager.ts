@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { randomUUID } from "crypto";
+import { GameParameters } from "../entities/gameParameters";
 import { Room } from "../entities/room";
 import { Session } from "../entities/session";
 
@@ -7,19 +8,20 @@ import { Session } from "../entities/session";
 export class RoomManager {
     private rooms: Map<string, Room> = new Map<string, Room>();
 
-    createRoom(owner: Session, size: number, nbrBooster: number = 4, pkmnPerBooster: number = 2): Room {
+    createRoom(owner: Session, gameParameters: GameParameters): Room {
         const roomId = `${randomUUID()}`;
 
         const Room: Room = {
             id: roomId,
             ownerId: owner.socketId,
-            name: `${owner.pseudo}::${roomId.substring(roomId.length - 4, roomId.length)}`,
-            size: size,
+            name: gameParameters.roomName,
+            size: gameParameters.size,
             players: new Map<string, Session>(),
-            boostersLeft: nbrBooster,
-            nbrBooster: nbrBooster,
-            pkmnPerBooster: pkmnPerBooster,
-            remainingPool: new Array()
+            boostersLeft: gameParameters.nbrBooster,
+            nbrBooster: gameParameters.nbrBooster,
+            pkmnPerBooster: gameParameters.pkmnPerBooster,
+            remainingPool: new Array(),
+            hasStarted: false
         };
 
         this.rooms.set(roomId, Room);

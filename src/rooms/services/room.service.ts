@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { GameParameters } from '../entities/gameParameters';
 import { Room } from '../entities/room';
 import { Session } from '../entities/session';
 import { DEFAULT } from '../enums/default.enum';
@@ -12,8 +13,8 @@ export class RoomService {
 
     }
 
-    createRoom(ownerSession: Session, size: number): Room {
-        let room = this.roomanager.createRoom(ownerSession, size);
+    createRoom(ownerSession: Session, gameParameters: GameParameters): Room {
+        let room = this.roomanager.createRoom(ownerSession, gameParameters);
         return this.joinRoom(ownerSession, room.id);
     }
 
@@ -21,6 +22,10 @@ export class RoomService {
         let room = this.roomanager.getRoom(roomId);
         if (!room) {
             throw new Error("Room not found.");
+        }
+
+        if (room.players.get((playerSession.socketId))) {
+            return room;
         }
 
         this.quitRoom(playerSession);
@@ -54,6 +59,14 @@ export class RoomService {
         }
 
         return room.players.size > 0 ? room.id : DEFAULT.NO_ROOM;
+    }
+
+    isPlayerOwner(roomId: string, playerSession: Session): boolean {
+        let room = this.roomanager.getRoom(roomId);
+        if (!room) {
+            throw new Error("Room not found.");
+        }
+        return room.ownerId === playerSession.socketId;
     }
 
     getAllRooms(): Room[] {

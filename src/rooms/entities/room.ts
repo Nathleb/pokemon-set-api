@@ -12,4 +12,5 @@ export interface Room {
     pkmnPerBooster: number,
     boostersLeft: number;
     remainingPool: PokemonSet[];
+    hasStarted: boolean;
 }

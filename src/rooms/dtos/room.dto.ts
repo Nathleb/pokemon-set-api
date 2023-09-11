@@ -6,6 +6,10 @@ export class RoomDTO {
     size: number;
     players: Partial<PlayerDTO>[];
     name: string;
+    hasStarted: boolean;
+    nbrBooster: number;
+    pkmnPerBooster: number;
+    boostersLeft: number;
 
     constructor(room: Room) {
         this.id = room.id;
@@ -13,9 +17,14 @@ export class RoomDTO {
         this.players = Array.from(room.players.values()).map(player => {
             return {
                 pseudo: player.pseudo,
-                sit: player.sit
+                sit: player.sit,
+                hasPicked: player.hasPicked
             };
         });
         this.name = room.name;
+        this.hasStarted = room.hasStarted;
+        this.nbrBooster = room.nbrBooster;
+        this.pkmnPerBooster = room.pkmnPerBooster;
+        this.boostersLeft = room.boostersLeft;
     }
 }

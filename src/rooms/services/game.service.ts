@@ -25,6 +25,8 @@ export class GameService {
                 throw new Error("Bad privileges");
             }
 
+            room.hasStarted = true;
+
             if (room.boostersLeft > 0) {
                 room.boostersLeft--;
                 room = await this.distributePokemons(room);
@@ -84,7 +86,7 @@ export class GameService {
 
     isNextRotation(room: Room): boolean {
         for (const player of room.players.values()) {
-            if (player.hasPicked == false) {
+            if (!player.hasPicked) {
                 return false;
             }
         }
