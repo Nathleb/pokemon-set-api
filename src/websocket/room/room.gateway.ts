@@ -25,9 +25,6 @@ export class RoomGateway {
     const deviceIdentifier = client.handshake.query.deviceIdentifier;
     if (typeof deviceIdentifier === 'string') {
       const session = this.sessionService.reconnectSessionByDeviceIdentifier(client.id, deviceIdentifier) || this.sessionService.createSession(client.id, deviceIdentifier);
-      console.log('Client connected:', session.socketId);
-      console.log('Client device:', session.deviceIdentifier);
-      console.log(session);
     }
   }
 
@@ -38,7 +35,6 @@ export class RoomGateway {
     }
     this.quitRoom(client);
     this.sessionService.deleteSession(session.socketId);
-    console.log('Client disconnected:', session.socketId);
   }
 
   /*<--------------------------------------ROOM-------------------------------------->*/
@@ -109,6 +105,19 @@ export class RoomGateway {
     const roomId = this.roomService.quitRoom(session);
     this.server.in(session.socketId).socketsLeave(roomId);
     this.server.in(roomId).emit("quitRoom", `${roomId} left`);
+  }
+
+  @SubscribeMessage('updatePseudo')
+  updatePseudo(client: Socket, payload: any): void {
+    const session = this.sessionService.getSession(client.id);
+    const { pseudo } = JSON.parse(payload);
+    console.log(pseudo);
+    if (!session) {
+      throw new Error;
+    }
+    session.pseudo = pseudo;
+    console.log(session);
+    this.sessionService.updateSession(session);
   }
 
   /*<--------------------------------------GAME-------------------------------------->*/

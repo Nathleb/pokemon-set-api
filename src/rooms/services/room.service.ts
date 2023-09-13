@@ -20,7 +20,7 @@ export class RoomService {
 
     joinRoom(playerSession: Session, roomId: string): Room {
         let room = this.roomanager.getRoom(roomId);
-        if (!room) {
+        if (!room || room.hasStarted) {
             throw new Error("Room not found.");
         }
 

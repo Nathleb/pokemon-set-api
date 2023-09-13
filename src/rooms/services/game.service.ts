@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PokemonSet } from 'src/pokemon/classes/pokemonSet';
 import { GetRandomPokemonsParameterDto } from 'src/pokemon/dtos/get-random-pokemons-parameter.dto';
 import { PokemonService } from 'src/pokemon/services/pokemon.service';
+import { RoomDTO } from '../dtos/room.dto';
 import { Room } from '../entities/room';
 import { Session } from '../entities/session';
 import { RoomManager } from '../manager/room.manager';
@@ -102,7 +103,12 @@ export class GameService {
         for (let i = 0; i < players.length - 1; i++) {
             const currentPlayer = players[i];
             const nextPlayer = players[i + 1];
-            [currentPlayer.toChoseFrom, nextPlayer.toChoseFrom] = [nextPlayer.toChoseFrom, currentPlayer.toChoseFrom];
+            if (room.boostersLeft % 2 == 0) {
+                [currentPlayer.toChoseFrom, nextPlayer.toChoseFrom] = [nextPlayer.toChoseFrom, currentPlayer.toChoseFrom];
+            }
+            else {
+                [nextPlayer.toChoseFrom, currentPlayer.toChoseFrom] = [currentPlayer.toChoseFrom, nextPlayer.toChoseFrom];
+            }
             currentPlayer.hasPicked = false;
             room.players.set(currentPlayer.socketId, currentPlayer);
             if (i == players.length - 2) {
