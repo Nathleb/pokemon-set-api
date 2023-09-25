@@ -15,7 +15,9 @@ export class Move {
     @Column()
     damage: number;
     @Column()
-    accuracy: number;
+    accuracy: number | boolean;
     @Column()
     type: string;
+    @Column()
+    category: string;
 }

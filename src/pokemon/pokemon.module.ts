@@ -9,11 +9,12 @@ import { KeyWord } from './entities/keyWord.entity';
 import { Move } from './entities/move.entity';
 import { KeyWordService } from './services/keyWord.service';
 import { MoveService } from './services/move.service';
+import { DataFromSdService } from './services/dataFromShowdown.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([PokemonTemplateSet, KeyWord, Move])],
   controllers: [PokemonController, DataUtilsController],
-  providers: [PokemonService, DataUtilsService, KeyWordService, MoveService],
+  providers: [PokemonService, DataUtilsService, DataFromSdService, KeyWordService, MoveService],
   exports: [PokemonService]
 })
 export class PokemonModule { }

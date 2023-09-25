@@ -1,11 +1,12 @@
 import { Body, Controller, Get, Param, Query } from '@nestjs/common';
+import { DataFromSdService } from './services/dataFromShowdown.service';
 import { DataUtilsService } from './services/dataUtils.service';
 
 
 @Controller('data')
 export class DataUtilsController {
 
-    constructor(private readonly dataUtilsService: DataUtilsService) { };
+    constructor(private readonly dataUtilsService: DataUtilsService, private readonly dataFromSd: DataFromSdService) { };
 
 
     // @Get('/pokemons')
@@ -26,5 +27,15 @@ export class DataUtilsController {
     // @Get('/moves')
     // fetchAndSaveMoves() {
     //     this.dataUtilsService.fetchAndSaveMoves();
+    // };
+
+
+    // @Get('/keyWords')
+    // fetchAndSaveAbilities() {
+    //     this.dataFromSd.addKeyWordsToDb();
+    // };
+    // @Get('/moves')
+    // fetchAndSaveMoves() {
+    //     this.dataFromSd.addMovesToDb();
     // };
 }

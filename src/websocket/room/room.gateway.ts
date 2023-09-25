@@ -4,6 +4,7 @@ import { PlayerDTO } from 'src/rooms/dtos/player.dto';
 import { RoomDTO } from 'src/rooms/dtos/room.dto';
 import { GameParameters } from 'src/rooms/entities/gameParameters';
 import { Room } from 'src/rooms/entities/room';
+import { Session } from 'src/rooms/entities/session';
 import { GameService } from 'src/rooms/services/game.service';
 import { RoomService } from 'src/rooms/services/room.service';
 import { SessionService } from 'src/rooms/services/session.service';
@@ -24,7 +25,9 @@ export class RoomGateway {
   handleConnection(client: Socket) {
     const deviceIdentifier = client.handshake.query.deviceIdentifier;
     if (typeof deviceIdentifier === 'string') {
-      const session = this.sessionService.reconnectSessionByDeviceIdentifier(client.id, deviceIdentifier) || this.sessionService.createSession(client.id, deviceIdentifier);
+      const session: Session = this.sessionService.reconnectSessionByDeviceIdentifier(client.id, deviceIdentifier) || this.sessionService.createSession(client.id, deviceIdentifier);
+
+      client.emit("firstConnection", { pseudo: session.pseudo, inRoomId: session.inRoomId });
     }
   }
 
