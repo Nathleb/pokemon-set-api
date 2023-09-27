@@ -23,16 +23,22 @@ export class RoomGateway {
   private server: Server;
 
   handleConnection(client: Socket) {
-    const deviceIdentifier = client.handshake.query.deviceIdentifier;
-    if (typeof deviceIdentifier === 'string') {
-      const session: Session = this.sessionService.reconnectSessionByDeviceIdentifier(client.id, deviceIdentifier) || this.sessionService.createSession(client.id, deviceIdentifier);
-
-      client.emit("firstConnection", { pseudo: session.pseudo, inRoomId: session.inRoomId });
-    }
+    this.getSessionInfos(client);
   }
 
   handleDisconnect(client: Socket) {
   }
+
+  @SubscribeMessage('getSessionInfos')
+  getSessionInfos(client: Socket): void {
+    const deviceIdentifier = client.handshake.query.deviceIdentifier;
+    if (typeof deviceIdentifier === 'string') {
+      const session: Session = this.sessionService.reconnectSessionByDeviceIdentifier(client.id, deviceIdentifier) || this.sessionService.createSession(client.id, deviceIdentifier);
+
+      client.emit("getSessionInfos", { pseudo: session.pseudo, inRoomId: session.inRoomId });
+    }
+  }
+
 
   /*<--------------------------------------ROOM-------------------------------------->*/
   /**
@@ -59,7 +65,7 @@ export class RoomGateway {
     catch (error) {
       client.emit("error", `Error while creating room: ${error}`);
     }
-  }
+  };
 
   /**
      * Let the client join an existing room, the roomId is provided in the payload
@@ -80,6 +86,9 @@ export class RoomGateway {
       const room: Room = this.roomService.joinRoom(session, roomId);
       this.server.in(session.socketId).socketsJoin(room.id);
       this.server.in(room.id).emit("joinRoom", new RoomDTO(room));
+      if (room.hasStarted) {
+        this.server.in(session.socketId).emit("nextPick", new PlayerDTO(session));
+      }
     }
     catch (error) {
       client.emit("error", `Error while joining room: ${error}`);
@@ -97,23 +106,23 @@ export class RoomGateway {
   quitRoom(client: Socket): void {
     const session = this.sessionService.getSession(client.id);
     if (!session) {
-      throw new Error;
+      throw new Error("session not found");
     }
     const roomId = this.roomService.quitRoom(session);
     this.server.in(session.socketId).socketsLeave(roomId);
     this.server.in(roomId).emit("quitRoom", `${roomId} left`);
-  }
+  };
 
   @SubscribeMessage('updatePseudo')
   updatePseudo(client: Socket, payload: any): void {
     const session = this.sessionService.getSession(client.id);
     const { pseudo } = JSON.parse(payload);
     if (!session) {
-      throw new Error;
+      throw new Error("session not found");
     }
     session.pseudo = pseudo;
     this.sessionService.updateSession(session);
-  }
+  };
 
   /*<--------------------------------------GAME-------------------------------------->*/
 
@@ -122,7 +131,7 @@ export class RoomGateway {
     const { roomId } = JSON.parse(payload);
     const session = this.sessionService.getSession(client.id);
     if (!session) {
-      throw new Error;
+      throw new Error("session not found");
     }
 
     try {
@@ -160,7 +169,7 @@ export class RoomGateway {
         else {
           client.emit("nextPick", new PlayerDTO(room.players.get(session.deviceIdentifier)!));
         }
-        this.server.in(roomId).emit('updateHasPickedStatus', new RoomDTO(room).players);
+        this.server.in(roomId).emit('updateHasPickedStatus', { players: new RoomDTO(room).players, boostersLeft: room.boostersLeft });
       }
     }
     catch (error) {

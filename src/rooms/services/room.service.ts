@@ -20,12 +20,15 @@ export class RoomService {
 
     joinRoom(playerSession: Session, roomId: string): Room {
         let room = this.roomanager.getRoom(roomId);
-        if (!room || room.hasStarted) {
+
+        if (!room) {
             throw new Error("Room not found.");
         }
-
         if (room.players.get((playerSession.deviceIdentifier))) {
             return room;
+        }
+        if (room.hasStarted) {
+            throw new Error("Game started");
         }
 
         this.quitRoom(playerSession);

@@ -86,12 +86,14 @@ export class GameService {
     }
 
     isNextRotation(room: Room): boolean {
+        let isLastPick: boolean = room.boostersLeft == 0;
         for (const player of room.players.values()) {
             if (!player.hasPicked) {
                 return false;
             }
+            isLastPick = isLastPick && player.toChoseFrom.length == 0;
         }
-        return true;
+        return !isLastPick;
     }
 
     async nextRotation(room: Room): Promise<Room> {
@@ -100,22 +102,19 @@ export class GameService {
             return (await this.nextBooster(room.ownerId, room.id))!;
         }
 
-        for (let i = 0; i < players.length - 1; i++) {
-            const currentPlayer = players[i];
-            const nextPlayer = players[i + 1];
-            if (room.boostersLeft % 2 == 0) {
-                [currentPlayer.toChoseFrom, nextPlayer.toChoseFrom] = [nextPlayer.toChoseFrom, currentPlayer.toChoseFrom];
-            }
-            else {
-                [nextPlayer.toChoseFrom, currentPlayer.toChoseFrom] = [currentPlayer.toChoseFrom, nextPlayer.toChoseFrom];
-            }
-            currentPlayer.hasPicked = false;
-            room.players.set(currentPlayer.deviceIdentifier, currentPlayer);
-            if (i == players.length - 2) {
-                nextPlayer.hasPicked = false;
-                room.players.set(nextPlayer.deviceIdentifier, nextPlayer);
-            }
+        const toChoseFromArr = players.map(player => player.toChoseFrom);
+        if (room.boostersLeft % 2 !== 0) {
+            toChoseFromArr.unshift(toChoseFromArr.pop()!);
+        } else {
+            toChoseFromArr.push(toChoseFromArr.shift()!);
         }
+
+        players.forEach((player, index) => {
+            player.toChoseFrom = toChoseFromArr[index];
+            player.hasPicked = false;
+            room.players.set(player.deviceIdentifier, player);
+        });
+
         return this.roomanager.updateRoom(room);
     }
 
