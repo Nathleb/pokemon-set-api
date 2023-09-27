@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { Room } from '../entities/room';
 import { Session } from '../entities/session';
 import { DEFAULT } from '../enums/default.enum';
+import { RoomManager } from '../manager/room.manager';
 import { SessionManager } from '../manager/session.manager';
+import { RoomService } from './room.service';
 
 @Injectable()
 export class SessionService {
 
-    constructor(private readonly sessionManager: SessionManager) { };
+    constructor(private readonly sessionManager: SessionManager, private readonly roomanager: RoomManager) { };
 
     public createSession(socketId: string, deviceIdentifier: string): Session {
         return this.sessionManager.createSession(socketId, deviceIdentifier);
@@ -34,14 +37,22 @@ export class SessionService {
     }
 
     public reconnectSessionByDeviceIdentifier(socketId: string, deviceIdentifier: string): Session | undefined {
-        // const sessions: Session[] = this.sessionManager.getAllSessions();
-        // const index = sessions.findIndex(session => session.deviceIdentifier === deviceIdentifier);
-        // if (index != -1) {
-        //     let session = sessions[index];
-        //     this.sessionManager.deleteSession(session.socketId);
-        //     session.socketId = socketId;
-        //     return this.sessionManager.updateSession(session);
-        // }
-        return undefined;
+        const sessions: Session[] = this.sessionManager.getAllSessions();
+        const index = sessions.findIndex(session => session.deviceIdentifier === deviceIdentifier);
+        if (index != -1) {
+            let session = sessions[index];
+            if (session.inRoomId !== DEFAULT.NO_ROOM) {
+                const currentRoom = this.roomanager.getRoom(session.inRoomId);
+                if (currentRoom === undefined) {
+                    session.inRoomId = DEFAULT.NO_ROOM;
+                }
+                else {
+                    currentRoom.players.delete(session.socketId);
+                }
+            }
+            this.sessionManager.deleteSession(session.socketId);
+            session.socketId = socketId;
+            return this.sessionManager.updateSession(session);
+        }
     }
 }

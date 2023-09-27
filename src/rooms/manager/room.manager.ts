@@ -13,7 +13,7 @@ export class RoomManager {
 
         const Room: Room = {
             id: roomId,
-            ownerId: owner.socketId,
+            ownerId: owner.deviceIdentifier,
             name: gameParameters.roomName,
             size: gameParameters.size,
             players: new Map<string, Session>(),

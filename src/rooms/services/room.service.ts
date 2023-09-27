@@ -24,7 +24,7 @@ export class RoomService {
             throw new Error("Room not found.");
         }
 
-        if (room.players.get((playerSession.socketId))) {
+        if (room.players.get((playerSession.deviceIdentifier))) {
             return room;
         }
 
@@ -32,14 +32,14 @@ export class RoomService {
         playerSession = this.sessionService.resetPlayer(playerSession, room.id, room.players.size + 1);
 
         if (room.players.size < room.size) {
-            room.players.set(playerSession.socketId, playerSession);
+            room.players.set(playerSession.deviceIdentifier, playerSession);
         }
 
         return this.roomanager.updateRoom(room);
     }
 
     quitRoom(playerSession: Session): string {
-        const { inRoomId, socketId } = playerSession;
+        const { inRoomId, deviceIdentifier } = playerSession;
         if (inRoomId === DEFAULT.NO_ROOM) {
             return DEFAULT.NO_ROOM;
         }
@@ -49,10 +49,11 @@ export class RoomService {
             throw new Error("Room not found.");
         }
 
-        room.players.delete(socketId);
+        room.players.delete(deviceIdentifier);
         playerSession.inRoomId = DEFAULT.NO_ROOM;
         this.sessionService.updateSession(playerSession);
         if (room.players.size > 0) {
+            room.ownerId = Array.from(room.players.values())[0].deviceIdentifier;
             this.roomanager.updateRoom(room);
         } else {
             this.roomanager.deleteRoom(room.id);
@@ -66,7 +67,7 @@ export class RoomService {
         if (!room) {
             throw new Error("Room not found.");
         }
-        return room.ownerId === playerSession.socketId;
+        return room.ownerId === playerSession.deviceIdentifier;
     }
 
     getAllRooms(): Room[] {

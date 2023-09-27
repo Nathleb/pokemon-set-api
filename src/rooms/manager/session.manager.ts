@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import { Session } from "../entities/session";
+import { DEFAULT } from "../enums/default.enum";
 
 
 @Injectable()
@@ -14,7 +15,7 @@ export class SessionManager {
             team: new Array(),
             toChoseFrom: new Array(),
             hasPicked: false,
-            inRoomId: "Has not joined a room yet",
+            inRoomId: DEFAULT.NO_ROOM,
             sit: -1,
             deviceIdentifier: deviceIdentifier
         };

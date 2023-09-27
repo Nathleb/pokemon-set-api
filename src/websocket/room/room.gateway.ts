@@ -32,12 +32,6 @@ export class RoomGateway {
   }
 
   handleDisconnect(client: Socket) {
-    const session = this.sessionService.getSession(client.id);
-    if (!session) {
-      throw new Error;
-    }
-    this.quitRoom(client);
-    this.sessionService.deleteSession(session.socketId);
   }
 
   /*<--------------------------------------ROOM-------------------------------------->*/
@@ -114,12 +108,10 @@ export class RoomGateway {
   updatePseudo(client: Socket, payload: any): void {
     const session = this.sessionService.getSession(client.id);
     const { pseudo } = JSON.parse(payload);
-    console.log(pseudo);
     if (!session) {
       throw new Error;
     }
     session.pseudo = pseudo;
-    console.log(session);
     this.sessionService.updateSession(session);
   }
 
@@ -134,7 +126,7 @@ export class RoomGateway {
     }
 
     try {
-      const room = await this.gameService.nextBooster(session.socketId, roomId);
+      const room = await this.gameService.nextBooster(session.deviceIdentifier, roomId);
       if (room) {
         room.players.forEach(player => {
           this.server.in(player.socketId).emit("nextPick", new PlayerDTO(player));
@@ -166,7 +158,7 @@ export class RoomGateway {
           });
         }
         else {
-          client.emit("nextPick", new PlayerDTO(room.players.get(session.socketId)!));
+          client.emit("nextPick", new PlayerDTO(room.players.get(session.deviceIdentifier)!));
         }
         this.server.in(roomId).emit('updateHasPickedStatus', new RoomDTO(room).players);
       }

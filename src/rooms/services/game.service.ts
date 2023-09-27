@@ -15,14 +15,14 @@ export class GameService {
 
     }
 
-    async nextBooster(sessionId: string, roomId: string): Promise<Room | undefined> {
+    async nextBooster(deviceIdentifier: string, roomId: string): Promise<Room | undefined> {
         try {
             let room = this.roomanager.getRoom(roomId);
             if (!room) {
                 throw new Error("Room not found.");
             }
 
-            if (room.ownerId !== sessionId) {
+            if (room.ownerId !== deviceIdentifier) {
                 throw new Error("Bad privileges");
             }
 
@@ -66,7 +66,7 @@ export class GameService {
                 throw new Error("Room not found.");
             }
 
-            let player = room.players.get(session.socketId);
+            let player = room.players.get(session.deviceIdentifier);
 
             if (!player || player.hasPicked) {
                 throw new Error("Player not found.");
@@ -77,7 +77,7 @@ export class GameService {
                 player.toChoseFrom.splice(index, 1);
                 player.hasPicked = true;
             }
-            room.players.set(session.socketId, player);
+            room.players.set(session.deviceIdentifier, player);
             return this.roomanager.updateRoom(room);
         } catch (error) {
             throw new Error(error);
@@ -110,10 +110,10 @@ export class GameService {
                 [nextPlayer.toChoseFrom, currentPlayer.toChoseFrom] = [currentPlayer.toChoseFrom, nextPlayer.toChoseFrom];
             }
             currentPlayer.hasPicked = false;
-            room.players.set(currentPlayer.socketId, currentPlayer);
+            room.players.set(currentPlayer.deviceIdentifier, currentPlayer);
             if (i == players.length - 2) {
                 nextPlayer.hasPicked = false;
-                room.players.set(nextPlayer.socketId, nextPlayer);
+                room.players.set(nextPlayer.deviceIdentifier, nextPlayer);
             }
         }
         return this.roomanager.updateRoom(room);
