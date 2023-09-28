@@ -17,6 +17,9 @@ import { SessionService } from 'src/rooms/services/session.service';
 export class RoomGateway {
 
   constructor(private readonly gameService: GameService, private readonly roomService: RoomService, private readonly sessionService: SessionService) {
+    setInterval(() => {
+      this.sessionService.cleanOldSessions();
+    }, 7200000);
   }
 
   @WebSocketServer()

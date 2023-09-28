@@ -17,7 +17,8 @@ export class SessionManager {
             hasPicked: false,
             inRoomId: DEFAULT.NO_ROOM,
             sit: -1,
-            deviceIdentifier: deviceIdentifier
+            deviceIdentifier: deviceIdentifier,
+            lastUpdated: new Date()
         };
 
         this.sessions.set(socketId, session);
@@ -33,6 +34,7 @@ export class SessionManager {
     };
 
     updateSession(session: Session): Session {
+        session.lastUpdated = new Date();
         this.sessions.set(session.socketId, session);
         return session;
     }

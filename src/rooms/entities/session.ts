@@ -11,4 +11,5 @@ export interface Session {
     team: PokemonSet[];
     sit: number;
     hasPicked: boolean;
+    lastUpdated: Date;
 }

@@ -52,11 +52,29 @@ export class SessionService {
                 }
                 else {
                     currentRoom.players.delete(session.socketId);
+                    currentRoom.players.size > 0 ? this.roomanager.updateRoom(currentRoom) : this.roomanager.deleteRoom(currentRoom.id);
                 }
             }
             this.sessionManager.deleteSession(session.socketId);
             session.socketId = socketId;
             return this.sessionManager.updateSession(session);
         }
+        return undefined;
+    }
+
+    public cleanOldSessions() {
+        const sessions = this.sessionManager.getAllSessions();
+
+        sessions.forEach(session => {
+            //if Last Connection is more than 12 hours old
+            if (new Date().getTime() - session.lastUpdated.getTime() > 43200000) {
+                const currentRoom = this.roomanager.getRoom(session.inRoomId);
+                if (currentRoom !== undefined) {
+                    currentRoom.players.delete(session.socketId);
+                    currentRoom.players.size > 0 ? this.roomanager.updateRoom(currentRoom) : this.roomanager.deleteRoom(currentRoom.id);
+                }
+                this.sessionManager.deleteSession(session.socketId);
+            }
+        });
     }
 }
