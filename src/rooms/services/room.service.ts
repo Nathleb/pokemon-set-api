@@ -41,10 +41,10 @@ export class RoomService {
         return this.roomanager.updateRoom(room);
     }
 
-    quitRoom(playerSession: Session): string {
+    quitRoom(playerSession: Session): Room | undefined {
         const { inRoomId, deviceIdentifier } = playerSession;
         if (inRoomId === DEFAULT.NO_ROOM) {
-            return DEFAULT.NO_ROOM;
+            return undefined;
         }
 
         const room = this.roomanager.getRoom(inRoomId);
@@ -57,12 +57,9 @@ export class RoomService {
         this.sessionService.updateSession(playerSession);
         if (room.players.size > 0) {
             room.ownerId = Array.from(room.players.values())[0].deviceIdentifier;
-            this.roomanager.updateRoom(room);
-        } else {
-            this.roomanager.deleteRoom(room.id);
+            return this.roomanager.updateRoom(room);
         }
-
-        return room.players.size > 0 ? room.id : DEFAULT.NO_ROOM;
+        return this.roomanager.deleteRoom(room.id);
     }
 
     isPlayerOwner(roomId: string, playerSession: Session): boolean {

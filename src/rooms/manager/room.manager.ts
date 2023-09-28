@@ -36,8 +36,9 @@ export class RoomManager {
         return Array.from(this.rooms.values());
     }
 
-    deleteRoom(roomId: string): void {
+    deleteRoom(roomId: string): undefined {
         this.rooms.delete(roomId);
+        return undefined;
     }
 
     updateRoom(room: Room): Room {

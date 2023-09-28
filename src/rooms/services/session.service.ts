@@ -19,6 +19,10 @@ export class SessionService {
         return this.sessionManager.getSession(socketId);
     }
 
+    public getSessionByDeviceIdentifier(deviceIdentifier: string): Session | undefined {
+        return this.sessionManager.getAllSessions().find(session => session.deviceIdentifier === deviceIdentifier);
+    }
+
     public deleteSession(socketId: string): void {
         this.sessionManager.deleteSession(socketId);
     }

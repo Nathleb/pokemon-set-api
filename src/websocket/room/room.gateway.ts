@@ -108,9 +108,15 @@ export class RoomGateway {
     if (!session) {
       throw new Error("session not found");
     }
-    const roomId = this.roomService.quitRoom(session);
-    this.server.in(session.socketId).socketsLeave(roomId);
-    this.server.in(roomId).emit("quitRoom", `${roomId} left`);
+    const room = this.roomService.quitRoom(session);
+    if (room) {
+      this.server.in(session.socketId).socketsLeave(room.id);
+      const newOwner = this.sessionService.getSessionByDeviceIdentifier(room.ownerId);
+      if (newOwner) {
+        this.server.in(newOwner.socketId).emit('isPlayerOwner', true);
+      }
+      this.server.in(room.id).emit("joinRoom", new RoomDTO(room));
+    }
   };
 
   @SubscribeMessage('updatePseudo')
