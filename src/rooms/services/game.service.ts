@@ -103,7 +103,8 @@ export class GameService {
         }
 
         const toChoseFromArr = players.map(player => player.toChoseFrom);
-        if (room.nbrBooster - room.boostersLeft % 2 !== 0) {
+
+        if ((room.nbrBooster - room.boostersLeft) % 2 == 0) {
             toChoseFromArr.unshift(toChoseFromArr.pop()!);
         } else {
             toChoseFromArr.push(toChoseFromArr.shift()!);
