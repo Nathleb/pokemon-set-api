@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import { Session } from "../entities/session";
 import { DEFAULT } from "../enums/default.enum";
+import { Trainers } from "./Trainers";
 
 
 @Injectable()
@@ -11,7 +12,7 @@ export class SessionManager {
     createSession(socketId: string, deviceIdentifier: string): Session {
         const session: Session = {
             socketId: socketId,
-            pseudo: `Player-${randomUUID().substring(0, 6)}`,
+            pseudo: `${Trainers[Math.floor(Math.random() * Trainers.length)]}-${randomUUID().substring(0, 6)}`,
             team: new Array(),
             toChoseFrom: new Array(),
             hasPicked: false,
