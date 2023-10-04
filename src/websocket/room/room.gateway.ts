@@ -131,6 +131,7 @@ export class RoomGateway {
     }
     session.pseudo = pseudo;
     this.sessionService.updateSession(session);
+    client.emit("getSessionInfos", { pseudo: session.pseudo, inRoomId: session.inRoomId });
   };
 
   /*<--------------------------------------GAME-------------------------------------->*/
