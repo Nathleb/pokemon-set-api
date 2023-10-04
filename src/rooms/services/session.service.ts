@@ -66,8 +66,8 @@ export class SessionService {
         const sessions = this.sessionManager.getAllSessions();
 
         sessions.forEach(session => {
-            //if Last Connection is more than 12 hours old
-            if (new Date().getTime() - session.lastUpdated.getTime() > 43200000) {
+            //if Last Connection is more than 1 hour old
+            if (new Date().getTime() - session.lastUpdated.getTime() > 3600000) {
                 const currentRoom = this.roomanager.getRoom(session.inRoomId);
                 if (currentRoom !== undefined) {
                     currentRoom.players.delete(session.socketId);

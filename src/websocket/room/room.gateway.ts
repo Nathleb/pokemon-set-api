@@ -5,6 +5,7 @@ import { RoomDTO } from 'src/rooms/dtos/room.dto';
 import { GameParameters } from 'src/rooms/entities/gameParameters';
 import { Room } from 'src/rooms/entities/room';
 import { Session } from 'src/rooms/entities/session';
+import { DEFAULT } from 'src/rooms/enums/default.enum';
 import { GameService } from 'src/rooms/services/game.service';
 import { RoomService } from 'src/rooms/services/room.service';
 import { SessionService } from 'src/rooms/services/session.service';
@@ -19,7 +20,7 @@ export class RoomGateway {
   constructor(private readonly gameService: GameService, private readonly roomService: RoomService, private readonly sessionService: SessionService) {
     setInterval(() => {
       this.sessionService.cleanOldSessions();
-    }, 7200000);
+    }, 3600000);
   }
 
   @WebSocketServer()
@@ -131,6 +132,10 @@ export class RoomGateway {
     }
     session.pseudo = pseudo;
     this.sessionService.updateSession(session);
+    const room = this.roomService.getRoom(session.inRoomId);
+    if (room) {
+      this.server.in(session.inRoomId).emit("joinRoom", new RoomDTO(room));
+    }
     client.emit("getSessionInfos", { pseudo: session.pseudo, inRoomId: session.inRoomId });
   };
 

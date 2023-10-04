@@ -13,6 +13,10 @@ export class RoomService {
 
     }
 
+    getRoom(roomId: string): Room | undefined {
+        return this.roomanager.getRoom(roomId);
+    }
+
     createRoom(ownerSession: Session, gameParameters: GameParameters): Room {
         let room = this.roomanager.createRoom(ownerSession, gameParameters);
         return this.joinRoom(ownerSession, room.id);
