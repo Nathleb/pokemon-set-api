@@ -3,4 +3,5 @@ export interface GameParameters {
     nbrBooster: number,
     pkmnPerBooster: number,
     roomName: string;
+    isPrivate: boolean;
 }

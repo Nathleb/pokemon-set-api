@@ -21,7 +21,8 @@ export class RoomManager {
             nbrBooster: gameParameters.nbrBooster,
             pkmnPerBooster: gameParameters.pkmnPerBooster,
             remainingPool: new Array(),
-            hasStarted: false
+            hasStarted: false,
+            isPrivate: gameParameters.isPrivate
         };
 
         this.rooms.set(roomId, Room);
