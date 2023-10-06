@@ -12,7 +12,7 @@ export class SessionManager {
     createSession(socketId: string, deviceIdentifier: string): Session {
         const session: Session = {
             socketId: socketId,
-            pseudo: `${Trainers[Math.floor(Math.random() * Trainers.length)]}-${randomUUID().substring(0, 6)}`,
+            pseudo: `${Trainers[Math.floor(Math.random() * Trainers.length)]}${randomUUID().substring(0, 2)}`,
             team: new Array(),
             toChoseFrom: new Array(),
             hasPicked: false,
