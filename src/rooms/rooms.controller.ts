@@ -8,8 +8,8 @@ export class RoomController {
     constructor(private readonly roomService: RoomService) { };
 
     @Get()
-    async getAllRooms(): Promise<RoomDTO[]> {
-        return this.roomService.getAllRooms().map(room => new RoomDTO(room));
+    async getAllPublicRooms(): Promise<RoomDTO[]> {
+        return this.roomService.getAllRooms().filter(room => room.isPublic).map(room => new RoomDTO(room));
     }
 
 }

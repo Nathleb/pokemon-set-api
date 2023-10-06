@@ -22,7 +22,7 @@ export class RoomManager {
             pkmnPerBooster: gameParameters.pkmnPerBooster,
             remainingPool: new Array(),
             hasStarted: false,
-            isPrivate: gameParameters.isPrivate
+            isPublic: gameParameters.isPublic
         };
 
         this.rooms.set(roomId, Room);

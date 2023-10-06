@@ -10,7 +10,7 @@ export class RoomDTO {
     nbrBooster: number;
     pkmnPerBooster: number;
     boostersLeft: number;
-    isPrivate: boolean;
+    isPublic: boolean;
 
     constructor(room: Room) {
         this.id = room.id;
@@ -27,6 +27,6 @@ export class RoomDTO {
         this.nbrBooster = room.nbrBooster;
         this.pkmnPerBooster = room.pkmnPerBooster;
         this.boostersLeft = room.boostersLeft;
-        this.isPrivate = room.isPrivate;
+        this.isPublic = room.isPublic;
     }
 }

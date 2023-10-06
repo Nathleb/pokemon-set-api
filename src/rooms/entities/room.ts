@@ -13,5 +13,5 @@ export interface Room {
     boostersLeft: number;
     remainingPool: PokemonSet[];
     hasStarted: boolean;
-    isPrivate: boolean;
+    isPublic: boolean;
 }
