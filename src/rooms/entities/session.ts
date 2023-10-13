@@ -1,6 +1,7 @@
 import { PokemonSet } from "src/pokemon/classes/pokemonSet";
 
 export interface Session {
+    isConnected: boolean;
     socketId: string;
     deviceIdentifier: string;
     inRoomId: string;

@@ -19,7 +19,8 @@ export class RoomDTO {
             return {
                 pseudo: player.pseudo,
                 sit: player.sit,
-                hasPicked: player.hasPicked
+                hasPicked: player.hasPicked,
+                isConnected: player.isConnected
             };
         });
         this.name = room.name;

@@ -19,7 +19,8 @@ export class SessionManager {
             inRoomId: DEFAULT.NO_ROOM,
             sit: -1,
             deviceIdentifier: deviceIdentifier,
-            lastUpdated: new Date()
+            lastUpdated: new Date(),
+            isConnected: true
         };
 
         this.sessions.set(socketId, session);

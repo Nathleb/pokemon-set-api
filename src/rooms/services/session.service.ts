@@ -57,6 +57,7 @@ export class SessionService {
             }
             this.sessionManager.deleteSession(session.socketId);
             session.socketId = socketId;
+            session.isConnected = true;
             return this.sessionManager.updateSession(session);
         }
         return undefined;

@@ -31,6 +31,14 @@ export class RoomGateway {
   }
 
   handleDisconnect(client: Socket) {
+    const session = this.sessionService.getSession(client.id);
+    if (session && session.inRoomId !== DEFAULT.NO_ROOM) {
+      session.isConnected = false;
+      const room = this.roomService.getRoom(session.inRoomId);
+      if (room) {
+        this.server.in(session.inRoomId).emit("joinRoom", new RoomDTO(room));
+      }
+    }
   }
 
   @SubscribeMessage('getSessionInfos')
@@ -200,8 +208,25 @@ export class RoomGateway {
     const session = this.sessionService.getSession(client.id);
     if (!session) {
       client.emit("error", `Error while processing the game`);
-      return false;
+      return;
     }
     client.emit('isPlayerOwner', this.roomService.isPlayerOwner(roomId, session));
   };
+
+  @SubscribeMessage('kickPlayer')
+  kickPlayer(client: Socket, payload: any) {
+    const { sit, roomId } = JSON.parse(payload);
+    const session = this.sessionService.getSession(client.id);
+    if (!session) {
+      client.emit("error", `Error while processing the game`);
+      return;
+    }
+    const kickedPlayer = this.roomService.kickPlayer(sit, session, roomId);
+    const room = this.roomService.getRoom(roomId);
+    if (room && kickedPlayer) {
+      this.server.in(kickedPlayer.socketId).socketsLeave(room.id);
+      this.server.in(roomId).emit("joinRoom", new RoomDTO(room));
+      this.server.in(kickedPlayer.socketId).emit("kicked");
+    }
+  }
 } 

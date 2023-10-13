@@ -7,6 +7,7 @@ export class PlayerDTO {
     team: PokemonSet[];
     sit: number;
     hasPicked: boolean;
+    isConnected: boolean;
 
     constructor(player: Session) {
         this.pseudo = player.pseudo;
@@ -14,5 +15,6 @@ export class PlayerDTO {
         this.toChoseFrom = player.toChoseFrom;
         this.sit = player.sit;
         this.hasPicked = player.hasPicked;
+        this.isConnected = player.isConnected;
     }
 }

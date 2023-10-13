@@ -66,6 +66,25 @@ export class RoomService {
         return this.roomanager.deleteRoom(room.id);
     }
 
+    kickPlayer(sit: number, session: Session, roomId: string): Session | undefined {
+        const room = this.roomanager.getRoom(session.inRoomId);
+        if (!room || room.id !== roomId) {
+            throw new Error("Room not found.");
+        }
+        if (room.ownerId !== session.deviceIdentifier) {
+            throw new Error("Bad privileges");
+        }
+        const kickedPlayer = Array.from(room.players.values()).find(player => player.sit === sit);
+        if (kickedPlayer && kickedPlayer.deviceIdentifier !== session.deviceIdentifier) {
+            room.players.delete(kickedPlayer.deviceIdentifier);
+            kickedPlayer.inRoomId = DEFAULT.NO_ROOM;
+            this.sessionService.updateSession(kickedPlayer);
+            this.roomanager.updateRoom(room);
+            return kickedPlayer;
+        }
+        return undefined;
+    }
+
     isPlayerOwner(roomId: string, playerSession: Session): boolean {
         let room = this.roomanager.getRoom(roomId);
         if (!room) {
@@ -76,5 +95,12 @@ export class RoomService {
 
     getAllRooms(): Room[] {
         return this.roomanager.getAllRoom();
+    }
+
+    disconnectPlayer(playerSession: Session) {
+        const { inRoomId, deviceIdentifier } = playerSession;
+        if (inRoomId === DEFAULT.NO_ROOM) {
+            return undefined;
+        }
     }
 }
