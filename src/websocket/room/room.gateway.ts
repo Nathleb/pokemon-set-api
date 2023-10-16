@@ -129,6 +129,7 @@ export class RoomGateway {
       }
       this.server.in(room.id).emit("joinRoom", new RoomDTO(room));
     }
+    client.emit("getSessionInfos", { pseudo: session.pseudo, inRoomId: session.inRoomId });
   };
 
   @SubscribeMessage('updatePseudo')
